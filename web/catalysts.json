@@ -1,0 +1,134 @@
+{
+ "generated_at": "2026-11-10T21:43:15Z",
+ "macro_events": [],
+ "commodity_events": [
+  {
+   "date": "2026-11-12",
+   "time_uk": "15:30",
+   "event": "EIA weekly natural gas storage",
+   "why": "Storage build vs expectations drives gas prices; standard Thursday 10:30 ET slot",
+   "affects": [
+    "NATGAS"
+   ],
+   "source": "https://ir.eia.gov/ngs_test/schedule.html"
+  },
+  {
+   "date": "2026-11-12",
+   "time_uk": "17:00",
+   "event": "EIA weekly oil inventories (moved for Veterans Day)",
+   "why": "Week ending Nov 6 report, delayed to Thursday noon ET by Veterans Day",
+   "affects": [
+    "WTI"
+   ],
+   "source": "https://www.eia.gov/petroleum/supply/weekly/schedule.php"
+  },
+  {
+   "date": "2026-11-18",
+   "time_uk": "15:30",
+   "event": "EIA weekly oil inventories",
+   "why": "US crude and fuel stock changes; surprises move oil within minutes",
+   "affects": [
+    "WTI"
+   ],
+   "source": "https://www.eia.gov/petroleum/supply/weekly/schedule.php"
+  },
+  {
+   "date": "2026-11-19",
+   "time_uk": "15:30",
+   "event": "EIA weekly natural gas storage",
+   "why": "Storage build vs expectations drives gas prices",
+   "affects": [
+    "NATGAS"
+   ],
+   "source": "https://ir.eia.gov/ngs_test/schedule.html"
+  }
+ ],
+ "earnings": [
+  {
+   "date": "2026-11-17",
+   "symbol": "NVDA",
+   "when": "after close",
+   "note": "Q3 fiscal 2027 results; call 5pm ET (22:00 UK)",
+   "source": "https://nvidianews.nvidia.com/news/nvidia-sets-conference-call-for-third-quarter-financial-results-6928873"
+  }
+ ],
+ "unlocks": [
+  {
+   "date": "2026-11-12",
+   "token": "RAIN",
+   "detail": "~$197M, ~5.08% of circulating supply (TokenPost earlier listed ~$166M on Nov 10)",
+   "recipient": "not stated",
+   "source": "https://www.kucoin.com/news/articles/crypto-daily-market-report-november-10-2026"
+  },
+  {
+   "date": "2026-11-14",
+   "token": "PIEVERSE",
+   "detail": "~$154M worth, ~31% of market cap per TokenPost (MrNasDog lists a smaller ~$23M release)",
+   "recipient": "team/investors",
+   "source": "https://www.tokenpost.com/news/investing/52283"
+  },
+  {
+   "date": "2026-11-24",
+   "token": "MON",
+   "detail": "Monad, ~16.6-17.1B MON, ~$132M (Tokenomist data); % of circulating not stated",
+   "recipient": "team/investors (one-year lock ends)",
+   "source": "https://www.bittime.com/en/blog/token-unlock-november-2026"
+  },
+  {
+   "date": "2026-11-16",
+   "token": "CRO",
+   "detail": "~$60M worth (1.17B CRO), ~2.3% of supply",
+   "recipient": "strategic reserve",
+   "source": "https://mrnasdog.com/token-unlocks/november-2026"
+  },
+  {
+   "date": "2026-11-22",
+   "token": "GRAM",
+   "detail": "36.58M GRAM, ~$43M, ~0.69% of total supply",
+   "recipient": "not stated",
+   "source": "https://www.coingabbar.com/en/token-unlocks-november-2026-top-10-dates-and-values"
+  },
+  {
+   "date": "2026-11-20",
+   "token": "ZRO",
+   "detail": "LayerZero, ~$38M worth (23.3M ZRO), ~5.8% of supply; monthly vesting",
+   "recipient": "not stated",
+   "source": "https://mrnasdog.com/token-unlocks/november-2026"
+  },
+  {
+   "date": "2026-11-11",
+   "token": "PUMP",
+   "detail": "Pump.fun, 6.88B PUMP, ~$28M, ~0.83% of total supply (TokenPost lists ~$25M on Nov 14)",
+   "recipient": "not stated",
+   "source": "https://www.coingabbar.com/en/token-unlocks-november-2026-top-10-dates-and-values"
+  },
+  {
+   "date": "2026-11-11",
+   "token": "ALLO",
+   "detail": "Allora, ~$26M, ~88.5% of circulating supply",
+   "recipient": "not stated",
+   "source": "https://www.kucoin.com/news/articles/crypto-daily-market-report-november-10-2026"
+  }
+ ],
+ "launches": [
+  {
+   "date": "2026-11 (late, TBC)",
+   "project": "Predict.fun",
+   "token": "PRED",
+   "detail": "Binance Alpha/spot listing and Binance Wallet airdrop delayed; listing expected by end of November, claim date TBC",
+   "source": "https://www.coingabbar.com/en/predict-fun-tge-and-listing-date-on-binance-airdrop-claim-news"
+  }
+ ],
+ "big_posts": [
+  {
+   "date": "2026-11-09",
+   "account": "Michael Saylor (@saylor)",
+   "summary": "Strategy disclosed buying 1,036 BTC (~$82M, avg ~$79k) over Nov 2-8, taking holdings to 850,364 BTC at ~$75.5k average cost; it also spent ~$188M buying back STRC",
+   "coins": [
+    "BTC"
+   ],
+   "source": "https://www.theblock.co/news/business/2026-11-09-connecting-the-dots-michael-saylor-strategy-bitcoin-436094"
+  }
+ ],
+ "notes": "Re-checked 2026-11-10 21:45 UTC against BLS November schedule: no FOMC/ECB/BoE/BoJ decision, NFP, CPI or US GDP before Nov 24 (Oct NFP was Nov 6, Oct CPI Nov 10; Q3 GDP second estimate Nov 25). US PPI (Oct) Nov 13 13:30 UK is outside the tracked event list. EIA oil report moved to Thu Nov 12 noon ET for Veterans Day. Trackers disagree on RAIN, PIEVERSE and PUMP sizes/dates. HYPE ~$314M unlock Nov 29 is outside the 14-day window. Trump Media Q3 filing (net +1,510 BTC, 15,649 BTC held) is a company filing, not a post, so not listed. Saylor Nov 8 chart post is outside 72h; the Nov 9 purchase disclosure remains."
+}

@@ -1,0 +1,1133 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1"><style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Signal Desk</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* Layout idea: a trading-desk board read top-down. Feed status, then what needs
+   attention now (priority news), then the strongest signals, then the full board
+   sorted strongest-first, then the explanation for the selected asset. */
+:root{
+  --bg:#eef1f4; --panel:#ffffff; --ink:#14202e; --muted:#5b6878; --line:#d6dce3; --accent:#1f5fae;
+  --sbull:#08703d; --sbull-bg:#cdeedb; --lbull:#2f8f5b; --lbull-bg:#e6f5ec;
+  --flat:#68737f; --flat-bg:#eceff3;
+  --lbear:#c0473c; --lbear-bg:#fcebe9; --sbear:#a3170f; --sbear-bg:#f7d5d1;
+  --warn:#9a6200; --warn-bg:#fdf1db; --hot:#c2410c; --hot-bg:#ffedd5;
+  --display:"IBM Plex Sans Condensed","Arial Narrow",Arial,sans-serif;
+  --body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0c1219; --panel:#131c26; --ink:#e4eaf1; --muted:#93a1b2; --line:#253240; --accent:#6aa5f0;
+  --sbull:#4ade94; --sbull-bg:#0f3a25; --lbull:#7fd3a5; --lbull-bg:#132b20;
+  --flat:#9aa6b5; --flat-bg:#1c2733;
+  --lbear:#f59a90; --lbear-bg:#33191a; --sbear:#ff6b5e; --sbear-bg:#4a1614;
+  --warn:#f0b54a; --warn-bg:#3a2c12; --hot:#fb923c; --hot-bg:#3b2213; color-scheme:dark;}}
+:root[data-theme="dark"]{
+  --bg:#0c1219; --panel:#131c26; --ink:#e4eaf1; --muted:#93a1b2; --line:#253240; --accent:#6aa5f0;
+  --sbull:#4ade94; --sbull-bg:#0f3a25; --lbull:#7fd3a5; --lbull-bg:#132b20;
+  --flat:#9aa6b5; --flat-bg:#1c2733;
+  --lbear:#f59a90; --lbear-bg:#33191a; --sbear:#ff6b5e; --sbear-bg:#4a1614;
+  --warn:#f0b54a; --warn-bg:#3a2c12; --hot:#fb923c; --hot-bg:#3b2213; color-scheme:dark;}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 var(--body)}
+.num,.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+h1,h2,h3{font-family:var(--display);margin:0;text-wrap:balance;letter-spacing:.01em}
+h1{font-size:28px;font-weight:700}
+h2{font-size:20px;font-weight:600}
+h3{font-size:15px;font-weight:600;text-transform:uppercase;letter-spacing:.06em}
+a{color:var(--accent)}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.wrap{max-width:1200px;margin:0 auto;padding:20px 20px 60px;display:grid;gap:18px}
+header.top{display:flex;flex-wrap:wrap;gap:10px 24px;align-items:center;justify-content:space-between}
+.sub{color:var(--muted);font-size:13px}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:999px;font-size:12.5px;font-weight:600;border:1px solid var(--line);background:var(--panel)}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--flat)}
+.chip.ok .dot{background:var(--sbull)} .chip.bad .dot{background:var(--sbear)} .chip.warn .dot{background:var(--warn)}
+
+/* tone classes: strong bull, lean bull, neutral, lean bear, strong bear */
+.t-sbull{--tc:var(--sbull);--tb:var(--sbull-bg)} .t-lbull{--tc:var(--lbull);--tb:var(--lbull-bg)}
+.t-flat{--tc:var(--flat);--tb:var(--flat-bg)}
+.t-lbear{--tc:var(--lbear);--tb:var(--lbear-bg)} .t-sbear{--tc:var(--sbear);--tb:var(--sbear-bg)}
+.pill{display:inline-block;padding:2px 10px;border-radius:999px;font-size:12.5px;font-weight:600;white-space:nowrap;background:var(--tb);color:var(--tc)}
+.t-sbull.pill,.t-sbear.pill{background:var(--tc);color:var(--panel)}
+.up{color:var(--sbull)} .dn{color:var(--sbear)}
+
+.banner{border-radius:8px;padding:14px 16px;display:grid;gap:6px;border:1px solid var(--line);border-left:5px solid var(--sbear);background:var(--panel)}
+.banner.warn{border-left-color:var(--warn)}
+.banner strong{font-family:var(--display);font-size:17px}
+.banner ol{margin:2px 0 0;padding-left:20px;font-size:14px}
+.banner code{font-family:var(--mono);font-size:13px;background:var(--flat-bg);padding:1px 5px;border-radius:4px}
+
+.priority{background:var(--panel);border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.priority .ph{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--line);background:var(--hot-bg)}
+.priority .ph h3{color:var(--hot)}
+.plist{list-style:none;margin:0;padding:0}
+.plist li{display:grid;grid-template-columns:96px 1fr;gap:4px 14px;padding:10px 14px;border-top:1px solid var(--line);font-size:14px}
+.plist li:first-child{border-top:0}
+.plist .when{font-family:var(--mono);font-size:12.5px;color:var(--muted)}
+.plist .when b{display:block;color:var(--hot);font-family:var(--display);font-size:13px;letter-spacing:.04em;text-transform:uppercase}
+.plist .what{display:grid;gap:2px}
+.tag{display:inline-block;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);border:1px solid var(--line);border-radius:4px;padding:0 5px;margin-right:6px;vertical-align:1px}
+@media (max-width:520px){.plist li{grid-template-columns:1fr}}
+
+.leaders{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:760px){.leaders{grid-template-columns:1fr}}
+.lead{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px 14px;display:grid;gap:8px;align-content:start;border-top:4px solid var(--tc)}
+.lead h3{color:var(--tc)}
+.lrow{display:grid;grid-template-columns:72px 1fr 52px;gap:10px;align-items:center;cursor:pointer;padding:4px 6px;border-radius:6px;border:0;background:none;text-align:left;width:100%}
+.lrow:hover{background:var(--flat-bg)}
+.lrow .sym{font-size:15px}
+.lbar{height:12px;border-radius:3px;background:var(--flat-bg);position:relative;overflow:hidden}
+.lbar i{position:absolute;top:0;bottom:0;left:0;border-radius:3px;background:var(--tc)}
+
+.mood{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+.tile{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px 14px;display:grid;gap:6px}
+.tile .k{font-family:var(--display);font-weight:600;font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.tile .v{font-family:var(--display);font-size:21px;font-weight:700;color:var(--tc)}
+.stack{display:flex;height:8px;border-radius:4px;overflow:hidden;background:var(--flat-bg)}
+.stack span{display:block;height:100%}
+
+.alerts{border-left:4px solid var(--accent);background:var(--panel);border-radius:6px;padding:10px 14px;display:grid;gap:4px}
+.alerts.empty{border-left-color:var(--line)}
+
+nav.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);overflow-x:auto}
+nav.tabs a{padding:9px 14px;text-decoration:none;color:var(--muted);font-family:var(--display);font-weight:600;font-size:15px;border-bottom:3px solid transparent;white-space:nowrap}
+nav.tabs a[aria-current="page"]{color:var(--ink);border-bottom-color:var(--accent)}
+
+.legendbar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:12.5px;color:var(--muted)}
+.board{background:var(--panel);border:1px solid var(--line);border-radius:8px;overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:660px}
+th,td{padding:9px 12px;text-align:left;border-bottom:1px solid var(--line);vertical-align:middle}
+th{font-family:var(--display);font-weight:600;font-size:12.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);background:var(--panel);position:sticky;top:0}
+th button{background:none;border:0;padding:0;cursor:pointer;text-transform:inherit;letter-spacing:inherit;font-weight:inherit;color:inherit;text-decoration:underline dotted;text-underline-offset:3px}
+td.r,th.r{text-align:right}
+tbody tr{cursor:pointer;box-shadow:inset 4px 0 0 var(--tc)}
+tbody tr:hover{background:var(--flat-bg)}
+tbody tr.sel{background:var(--tb)}
+.sym{font-family:var(--display);font-weight:700;font-size:16px}
+.nm{color:var(--muted);font-size:12.5px}
+.meter{position:relative;width:120px;height:10px;background:var(--flat-bg);border-radius:4px}
+.meter i{position:absolute;top:0;bottom:0;border-radius:4px;background:var(--tc)}
+.meter b{position:absolute;left:50%;top:-3px;bottom:-3px;width:1px;background:var(--muted)}
+.conf{font-size:12.5px;color:var(--muted)}
+.stale{font-size:11px;color:var(--warn);font-weight:600}
+
+.detail{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:18px;display:grid;gap:16px;border-top:4px solid var(--tc)}
+.dhead{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:baseline}
+.dhead .px{font-family:var(--mono);font-size:22px;font-weight:600}
+.grid2{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);gap:18px}
+@media (max-width:820px){.grid2{grid-template-columns:1fr}}
+.chart{position:relative}
+.chart svg{display:block;width:100%;height:auto}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:12.5px;color:var(--muted)}
+.legend i{display:inline-block;width:16px;height:0;border-top:2px solid;vertical-align:middle;margin-right:5px}
+.tip{position:absolute;pointer-events:none;background:var(--ink);color:var(--bg);font:12px/1.4 var(--mono);padding:6px 8px;border-radius:4px;white-space:nowrap;display:none;z-index:2}
+.reasons{display:grid;gap:8px}
+.rs{display:grid;grid-template-columns:1fr 140px 44px;gap:10px;align-items:center;font-size:13.5px}
+.rbar{position:relative;height:10px;background:var(--flat-bg);border-radius:3px}
+.rbar i{position:absolute;top:0;bottom:0}
+.rbar b{position:absolute;left:50%;top:-2px;bottom:-2px;width:1px;background:var(--muted)}
+.flags{display:grid;gap:6px}
+.flag{background:var(--warn-bg);color:var(--ink);border-left:3px solid var(--warn);padding:7px 10px;border-radius:4px;font-size:13.5px}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px}
+.fact{border:1px solid var(--line);border-radius:6px;padding:8px 10px}
+.fact .k{font-size:11.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.fact .v{font-family:var(--mono);font-size:15px}
+.verdict{font-size:15px;max-width:68ch;margin:0}
+.hist{font-size:13.5px;max-width:68ch;margin:0}
+
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px;display:grid;gap:8px;align-content:start}
+.card h3{display:flex;justify-content:space-between;gap:8px;align-items:center}
+.list{display:grid;gap:8px;margin:0;padding:0;list-style:none}
+.list li{border-top:1px solid var(--line);padding-top:8px;display:grid;gap:2px;font-size:13.5px}
+.list li:first-child{border-top:0;padding-top:0}
+.list li.hi{border-left:3px solid var(--hot);padding-left:8px}
+.list .when{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.research{font-size:12.5px;color:var(--muted);border-top:1px dashed var(--line);padding-top:8px}
+.prose{max-width:72ch;display:grid;gap:12px}
+.prose p{margin:0}
+.mtable td,.mtable th{font-size:13.5px}
+.notice{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px;font-size:13.5px;color:var(--muted)}
+.setups{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,370px),1fr));gap:12px}
+.setup{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px 16px;display:grid;gap:12px;align-content:start;border-top:4px solid var(--tc)}
+.setup .shead{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:baseline}
+.setup .shead .px{font-family:var(--mono);font-size:18px;font-weight:600}
+.sbody{display:grid;grid-template-columns:136px minmax(0,1fr);gap:12px;align-items:start}
+@media (max-width:420px){.sbody{grid-template-columns:1fr}}
+.ladder svg{display:block;width:100%;height:auto}
+.kv{display:grid;gap:6px;margin:0}
+.kv div{display:grid;grid-template-columns:1fr auto;gap:8px;border-bottom:1px dashed var(--line);padding-bottom:5px;font-size:13.5px}
+.kv dt{color:var(--muted)} .kv dd{margin:0;font-family:var(--mono);text-align:right;min-width:0;overflow-wrap:anywhere}
+.weigh{margin:0;padding-left:18px;display:grid;gap:5px;font-size:13.5px}
+.zchip{display:inline-block;font-size:12px;font-weight:600;padding:1px 8px;border-radius:999px;background:var(--tb);color:var(--tc)}
+.lvls{display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:13.5px}
+.lvls ul{list-style:none;margin:4px 0 0;padding:0;display:grid;gap:3px;font-family:var(--mono)}
+.fgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px 14px}
+.fgrid label{display:grid;gap:4px;font-size:12.5px;color:var(--muted)}
+.fgrid input,.fgrid select{font:inherit;font-size:14px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:7px 9px;min-width:0}
+.btn{font:inherit;font-weight:600;font-size:14px;background:var(--accent);color:#fff;border:0;border-radius:6px;padding:9px 12px;cursor:pointer}
+.btn:hover{filter:brightness(1.08)}
+.tested{border-left:4px solid var(--tc);background:var(--tb);border-radius:6px;padding:8px 10px;font-size:13px;color:var(--ink)}
+.timeframe{display:grid;gap:6px;border:1px dashed var(--line);border-radius:6px;padding:10px 12px;font-size:13.5px}
+.hcaps{display:grid;gap:4px}
+.hc{display:grid;grid-template-columns:110px 1fr 56px;gap:8px;align-items:center;font-size:12.5px}
+.hbar{height:8px;background:var(--flat-bg);border-radius:3px;position:relative;overflow:hidden}
+.hbar i{position:absolute;left:0;top:0;bottom:0;border-radius:3px}
+.section{display:grid;gap:10px}
+.section > .sh{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:6px 14px}
+@media (prefers-reduced-motion:no-preference){.detail{animation:fade .18s ease-out}@keyframes fade{from{opacity:.4}to{opacity:1}}}
+@media (max-width:520px){.wrap{padding:14px 16px 40px}.rs{grid-template-columns:1fr 90px 40px}.meter{width:64px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div style="display:grid;gap:2px">
+      <h1>Signal Desk</h1>
+      <div class="sub">Daily signals for stocks, indices, forex, commodities, bonds and crypto, with funded-account tools. Research-weighted, not financial advice.</div>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;gap:8px" id="status"></div>
+  </header>
+
+  <div id="banner"></div>
+  <section id="priority" aria-label="Priority news"></section>
+
+  <nav class="tabs" aria-label="Sections">
+    <a href="#overview" data-tab="overview">Overview</a>
+    <a href="#stocks" data-tab="stocks">Stocks</a>
+    <a href="#indices" data-tab="indices">Indices</a>
+    <a href="#forex" data-tab="forex">Forex</a>
+    <a href="#commodities" data-tab="commodities">Commodities</a>
+    <a href="#bonds" data-tab="bonds">Bonds</a>
+    <a href="#crypto" data-tab="crypto">Crypto</a>
+    <a href="#funded" data-tab="funded">Funded account</a>
+    <a href="#method" data-tab="method">How it works</a>
+  </nav>
+
+  <main id="view"></main>
+</div>
+
+<script>
+(function(){
+"use strict";
+const CLASS_OF = {stocks:"stock", indices:"index", forex:"fx", commodities:"commodity", bonds:"bond", crypto:"crypto"};
+const CLASS_NAME = {stock:"Stocks", index:"Indices", fx:"Forex", commodity:"Commodities", bond:"Bonds", crypto:"Crypto"};
+const WATCH = ["BTC","ETH","SOL","XRP"];
+const STOCKS = ["SPY","QQQ","AAPL","MSFT","NVDA","AMZN","TSLA"];
+let SET = null, STATS = null, SCORE = null, TICK = null, INTRA = null, ISTATS = null;
+let DATA = null, CAT = null, SELECTED = null, SORT = {key:"strength", dir:-1}, DATA_ERR = null;
+
+const $ = (s, el=document) => el.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function tone(s){ if (s == null) return "t-flat"; return s >= 40 ? "t-sbull" : s >= 15 ? "t-lbull" : s > -15 ? "t-flat" : s > -40 ? "t-lbear" : "t-sbear"; }
+function fmtPrice(v){
+  if (v == null) return "—";
+  const a = Math.abs(v), d = a >= 20 ? 2 : a >= 1 ? 4 : 5;
+  return v.toLocaleString("en-GB", {minimumFractionDigits:d, maximumFractionDigits:d});
+}
+const fmtPct = v => v == null ? "—" : (v > 0 ? "+" : "") + v.toFixed(2) + "%";
+const fmtScore = v => v == null ? "—" : (v > 0 ? "+" : "") + Math.round(v);
+function ago(iso){
+  const ms = Date.now() - Date.parse(iso); if (!isFinite(ms)) return "";
+  const h = ms / 36e5; return h < 1 ? Math.max(1, Math.round(h*60)) + " min ago" : h < 48 ? Math.round(h) + " h ago" : Math.round(h/24) + " days ago";
+}
+function daysUntil(d){
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(d || "")) return null;
+  const t = Date.parse(d + "T23:59:59Z"); const today = new Date(); today.setUTCHours(0,0,0,0);
+  return Math.floor((t - today.getTime()) / 864e5);
+}
+function whenWord(d){
+  const n = daysUntil(d); if (n == null) return esc(d);
+  if (n < 0) return Math.abs(n) === 1 ? "Yesterday" : Math.abs(n) + " days ago";
+  return n === 0 ? "Today" : n === 1 ? "Tomorrow" : "In " + n + " days";
+}
+function meter(score){
+  const s = Math.max(-100, Math.min(100, score || 0)), w = Math.abs(s) / 2;
+  const left = s >= 0 ? 50 : 50 - w;
+  return `<div class="meter ${tone(s)}" role="img" aria-label="score ${Math.round(s)} of 100"><i style="left:${left}%;width:${w}%"></i><b></b></div>`;
+}
+const pill = (label, score) => `<span class="pill ${tone(score)}">${esc(label)}</span>`;
+
+async function load(){
+  try {
+    const r = await fetch("data.json", {cache:"no-store"});
+    if (!r.ok) throw new Error(r.status === 404 ? "missing" : "HTTP " + r.status);
+    DATA = await r.json();
+  } catch(e){ DATA = null; DATA_ERR = String(e.message || e); }
+  try {
+    const r = await fetch("catalysts.json", {cache:"no-store"});
+    if (r.ok) CAT = await r.json();
+  } catch(e){ CAT = null; }
+  try {
+    const r = await fetch("setups.json", {cache:"no-store"});
+    if (r.ok) SET = await r.json();
+  } catch(e){ SET = null; }
+  try { const r = await fetch("setup_stats.json", {cache:"no-store"}); if (r.ok) STATS = await r.json(); } catch(e){ STATS = null; }
+  try { const r = await fetch("scorecard.json", {cache:"no-store"}); if (r.ok) SCORE = await r.json(); } catch(e){ SCORE = null; }
+  try { const r = await fetch("intraday.json", {cache:"no-store"}); if (r.ok) INTRA = await r.json(); } catch(e){ INTRA = null; }
+  try { const r = await fetch("intraday_stats.json", {cache:"no-store"}); if (r.ok) ISTATS = await r.json(); } catch(e){ ISTATS = null; }
+  renderTop(); route();
+}
+
+function assets(cls){ return (DATA?.assets || []).filter(a => !cls || a.asset_class === cls); }
+function okAssets(cls){ return assets(cls).filter(a => a.status === "ok"); }
+
+/* ---------- status + banner ---------- */
+function renderTop(){
+  const st = $("#status"), bn = $("#banner");
+  const chips = [];
+  let banner = "";
+  if (!DATA){
+    chips.push(`<span class="chip bad"><span class="dot"></span>Prices not loaded</span>`);
+    banner = `<div class="banner" role="status"><strong>Prices aren't updating yet, so stock, forex and crypto signals are empty</strong>
+      <span class="sub" style="font-size:14px;color:var(--ink)">The scheduled update runs in Claude's cloud workspace, and that workspace isn't allowed to reach the price feed (Yahoo Finance). News and catalysts below still update.</span>
+      <ol><li>Open claude.ai Settings › Capabilities and add <code>query1.finance.yahoo.com</code> and <code>query2.finance.yahoo.com</code> to the allowed domains.</li>
+      <li>The next run (every 4 hours) fills in the signals. Or ask Claude to run the Signal Desk update now.</li></ol></div>`;
+  } else {
+    const hrs = (Date.now() - Date.parse(DATA.generated_at)) / 36e5;
+    const t = new Date(DATA.generated_at);
+    const when = t.toLocaleString("en-GB",{weekday:"short",day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"});
+    const stale = hrs > 9, errs = (DATA.errors || []).length;
+    chips.push(`<span class="chip ${stale ? "warn" : errs ? "warn" : "ok"}"><span class="dot"></span>Prices ${esc(when)} · ${esc(ago(DATA.generated_at))}</span>`);
+    if (stale) banner = `<div class="banner warn" role="status"><strong>Prices are ${hrs < 48 ? Math.round(hrs) + " hours" : Math.round(hrs/24) + " days"} old</strong><span class="sub" style="font-size:14px;color:var(--ink)">The last two scheduled updates didn't reach the price feed. Signals below are from the last good run.</span></div>`;
+    else if (errs) banner = `<div class="banner warn" role="status"><strong>${errs} asset${errs > 1 ? "s" : ""} didn't update this run</strong><span class="sub">Their last good reading is shown and marked stale. ${esc(DATA.errors.slice(0,3).join("; "))}</span></div>`;
+  }
+  if (CAT?.generated_at) chips.push(`<span class="chip ok"><span class="dot"></span>News ${esc(ago(CAT.generated_at))}</span>`);
+  chips.push(`<span class="chip"><span class="dot" style="background:var(--accent)"></span>Updates every 4 hours</span>`);
+  st.innerHTML = chips.join("");
+  bn.innerHTML = banner;
+  renderPriority();
+}
+
+/* ---------- news items with priority ---------- */
+function money(s){ const m = /\$\s?([\d.,]+)\s*([MB])/i.exec(s || ""); if (!m) return null; return parseFloat(m[1].replace(/,/g,"")) * (m[2].toUpperCase() === "B" ? 1000 : 1); }
+function pctOf(s){ const m = /([\d.]+)\s*%/.exec(s || ""); return m ? parseFloat(m[1]) : null; }
+function newsItems(){
+  if (!CAT) return [];
+  const out = [];
+  for (const e of CAT.macro_events || []){
+    const n = daysUntil(e.date); if (n != null && n < 0) continue;
+    out.push({kind:"Macro", date:e.date, time:e.time_uk ? e.time_uk + " UK" : "", title:e.event, detail:e.why, source:e.source,
+      hi: n != null && n <= 3, reason: "Big scheduled release within 3 days"});
+  }
+  for (const e of CAT.commodity_events || []){
+    const n = daysUntil(e.date); if (n != null && n < 0) continue;
+    out.push({kind:"Commodity", date:e.date, time:e.time_uk ? e.time_uk + " UK" : "", title:e.event, detail:[e.why, (e.affects || []).length ? "Moves: " + e.affects.join(", ") : ""].filter(Boolean).join(" · "),
+      source:e.source, affects:e.affects || [], hi: n != null && n <= 2});
+  }
+  for (const e of CAT.earnings || []){
+    const n = daysUntil(e.date); if (n != null && n < 0) continue;
+    out.push({kind:"Earnings", date:e.date, time:e.when || "", title:e.symbol + " earnings", detail:e.note, source:e.source, hi: n != null && n <= 3});
+  }
+  for (const e of CAT.unlocks || []){
+    const n = daysUntil(e.date); if (n != null && n < 0) continue;
+    const usd = money(e.detail), pct = pctOf(e.detail), insider = /team|investor|contributor/i.test(e.recipient || "");
+    const watch = WATCH.includes((e.token || "").toUpperCase());
+    out.push({kind:"Unlock", date:e.date, time:"", title:e.token + " token unlock", detail:[e.detail, e.recipient && !/not stated/i.test(e.recipient) ? "to " + e.recipient : ""].filter(Boolean).join(" · "), source:e.source,
+      hi: watch || (n != null && n <= 7 && ((usd || 0) >= 50 || (pct || 0) >= 3 || insider)), usd: usd || 0});
+  }
+  for (const e of CAT.launches || []){
+    out.push({kind:"Launch", date:e.date, time:"", title:e.project + (e.token ? " (" + e.token + ")" : ""), detail:e.detail, source:e.source, hi:false});
+  }
+  for (const e of CAT.big_posts || []){
+    const coins = (e.coins || []).map(c => String(c).toUpperCase());
+    out.push({kind:"Post", date:e.date, time:"", title:e.account, detail:e.summary + (coins.length ? " · " + coins.join(", ") : ""), source:e.source,
+      hi: coins.some(c => WATCH.includes(c)), past:true});
+  }
+  return out;
+}
+function renderPriority(){
+  const box = $("#priority");
+  const items = newsItems().filter(i => i.hi).sort((a,b) => {
+    const da = a.past ? 50 : daysUntil(a.date), db = b.past ? 50 : daysUntil(b.date);
+    return (da ?? 99) - (db ?? 99) || (b.usd || 0) - (a.usd || 0);
+  }).slice(0, 7);
+  if (!items.length){ box.innerHTML = ""; return; }
+  box.innerHTML = `<div class="priority"><div class="ph"><h3>Priority news</h3><span class="sub">Events in the next few days, big unlocks, and posts naming your coins</span></div>
+    <ul class="plist">${items.map(i => `<li><span class="when"><b>${i.past ? "Posted" : whenWord(i.date)}</b>${esc(i.date)}${i.time ? " · " + esc(i.time) : ""}</span>
+      <span class="what"><span><span class="tag">${esc(i.kind)}</span><strong>${esc(i.title)}</strong></span><span class="sub">${esc(i.detail || "")}${src(i.source)}</span></span></li>`).join("")}</ul></div>`;
+}
+
+/* ---------- routing ---------- */
+function route(){
+  const tab = (location.hash || "#overview").slice(1);
+  const t = ["overview","stocks","indices","forex","commodities","bonds","crypto","funded","method"].includes(tab) ? tab : "overview";
+  document.querySelectorAll("nav.tabs a").forEach(a => { if (a.dataset.tab !== t) a.removeAttribute("aria-current"); else a.setAttribute("aria-current","page"); });
+  const v = $("#view");
+  if (t === "method") { v.innerHTML = methodHTML(); return; }
+  if (t === "funded") { renderFunded(v); return; }
+  const cls = CLASS_OF[t];
+  const news = t === "overview" ? eventsHTML() : t === "stocks" ? eventsHTML(true) : t === "crypto" ? catalystsHTML() : t === "forex" ? eventsHTML(false, true) : t === "commodities" ? commodityEventsHTML() : t === "indices" ? eventsHTML(true, false, "Events that move indices") : t === "bonds" ? eventsHTML(false, true, "Events that move bonds") : "";
+  if (!DATA) {
+    v.innerHTML = `<div style="display:grid;gap:18px"><div class="notice">${t === "overview" ? "Signals" : CLASS_NAME[cls] + " signals"} appear here once prices load (see the note at the top).</div>${news}</div>`;
+    return;
+  }
+  const list = assets(cls);
+  if (!SELECTED || !list.some(a => a.symbol === SELECTED)) SELECTED = [...list].filter(a=>a.status==="ok").sort((a,b) => Math.abs(b.score) - Math.abs(a.score))[0]?.symbol;
+  v.innerHTML = `<div style="display:grid;gap:18px">
+    ${t === "overview" ? moodHTML() + alertsHTML() : ""}
+    ${leadersHTML(cls)}
+    ${setupsHTML(cls)}
+    ${intradayHTML(cls)}
+    <div class="section"><div class="sh"><h2>${cls ? CLASS_NAME[cls] : "All assets"}, strongest first</h2>
+      <div class="legendbar"><span>Key:</span>${pill("Bullish",50)}${pill("Leaning bullish",20)}${pill("Neutral",0)}${pill("Leaning bearish",-20)}${pill("Bearish",-50)}</div></div>
+      <div class="board">${boardHTML(list, !cls)}</div></div>
+    <div id="detail"></div>
+    ${news}
+  </div>`;
+  v.querySelectorAll("tbody tr, .lrow").forEach(el => {
+    const pick = () => { SELECTED = el.dataset.sym; v.querySelectorAll("tbody tr").forEach(x => x.classList.toggle("sel", x.dataset.sym === SELECTED)); renderDetail(); $("#detail")?.scrollIntoView({behavior:"smooth", block:"nearest"}); };
+    el.addEventListener("click", pick);
+    if (el.tagName === "TR") el.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); pick(); } });
+  });
+  v.querySelectorAll("th button").forEach(b => b.addEventListener("click", () => {
+    const k = b.dataset.k; SORT = {key:k, dir: SORT.key === k ? -SORT.dir : (k === "symbol" ? 1 : -1)}; route();
+  }));
+  renderDetail();
+}
+
+function moodHTML(){
+  const tiles = [];
+  for (const cls of ["stock","index","fx","commodity","bond","crypto"]){
+    const xs = okAssets(cls); if (!xs.length) continue;
+    const b = xs.filter(a => a.score >= 15).length, s = xs.filter(a => a.score <= -15).length, n = xs.length - b - s;
+    const avg = xs.reduce((t,a) => t + a.score, 0) / xs.length;
+    const word = avg >= 15 ? "Leaning bullish" : avg <= -15 ? "Leaning bearish" : "Mixed";
+    tiles.push(`<div class="tile ${tone(avg)}"><div class="k">${CLASS_NAME[cls]}</div>
+      <div class="v">${word} <span class="num" style="font-size:15px;color:var(--muted)">avg ${fmtScore(avg)}</span></div>
+      <div class="stack" role="img" aria-label="${b} bullish, ${n} neutral, ${s} bearish"><span style="width:${100*b/xs.length}%;background:var(--sbull)"></span><span style="width:${100*n/xs.length}%;background:var(--flat)"></span><span style="width:${100*s/xs.length}%;background:var(--sbear)"></span></div>
+      <div class="sub">${b} bullish · ${n} neutral · ${s} bearish</div></div>`);
+  }
+  return tiles.length ? `<section class="mood" aria-label="Market mood">${tiles.join("")}</section>` : "";
+}
+function alertsHTML(){
+  const list = DATA.alerts || [];
+  return `<section class="alerts ${list.length ? "" : "empty"}" aria-live="polite">${list.length
+    ? `<h3>Signal changes since last run</h3>${list.map(m => `<div class="mono" style="font-size:13.5px">${esc(m)}</div>`).join("")}`
+    : `<div class="sub">No asset crossed into or out of a full Bullish or Bearish state since the last run.</div>`}</section>`;
+}
+function leadersHTML(cls){
+  const xs = okAssets(cls);
+  const bulls = xs.filter(a => a.score >= 15).sort((a,b) => b.score - a.score).slice(0,5);
+  const bears = xs.filter(a => a.score <= -15).sort((a,b) => a.score - b.score).slice(0,5);
+  const row = a => `<button class="lrow ${tone(a.score)}" data-sym="${esc(a.symbol)}" aria-label="Show ${esc(a.symbol)}">
+      <span><span class="sym">${esc(a.symbol)}</span><div class="nm">${esc(CLASS_NAME[a.asset_class])}</div></span>
+      <span class="lbar"><i style="width:${Math.min(100, Math.abs(a.score))}%"></i></span>
+      <span class="num" style="text-align:right;font-weight:600;color:var(--tc)">${fmtScore(a.score)}</span></button>`;
+  return `<section class="leaders" aria-label="Strongest signals">
+    <div class="lead t-sbull"><h3>Strongest bullish</h3>${bulls.length ? bulls.map(row).join("") : `<div class="sub">Nothing scores above +15 right now.</div>`}</div>
+    <div class="lead t-sbear"><h3>Strongest bearish</h3>${bears.length ? bears.map(row).join("") : `<div class="sub">Nothing scores below −15 right now.</div>`}</div>
+  </section>`;
+}
+
+function boardHTML(list, showClass){
+  const val = (a, k) => k === "strength" ? (a.status === "ok" ? Math.abs(a.score) : -1) : a[k];
+  const rows = [...list].sort((a,b) => {
+    const av = val(a, SORT.key) ?? -1e9, bv = val(b, SORT.key) ?? -1e9;
+    const d = (typeof av === "string" ? av.localeCompare(bv) : av - bv) * SORT.dir;
+    return d || (b.score ?? 0) - (a.score ?? 0);
+  });
+  const h = (k, label, cls="") => `<th class="${cls}"><button data-k="${k}" aria-label="Sort by ${label}">${label}${SORT.key === k ? (SORT.dir > 0 ? " ▲" : " ▼") : ""}</button></th>`;
+  return `<table><thead><tr>${h("symbol","Asset")}${showClass ? "<th>Market</th>" : ""}${h("price","Price","r")}${h("chg_1d_pct","1 day","r")}${h("strength","Strength","r")}${h("score","Score","r")}<th>Signal</th><th>Confidence</th></tr></thead><tbody>
+  ${rows.map(a => a.status !== "ok" ? `<tr class="t-flat" data-sym="${esc(a.symbol)}" tabindex="0"><td><span class="sym">${esc(a.symbol)}</span></td>${showClass?`<td>${CLASS_NAME[a.asset_class]}</td>`:""}<td colspan="6" class="sub">Not enough price history yet</td></tr>` : `
+    <tr data-sym="${esc(a.symbol)}" tabindex="0" class="${tone(a.score)} ${a.symbol === SELECTED ? "sel" : ""}">
+      <td><div class="sym">${esc(a.symbol)}</div><div class="nm">${esc(a.name)}${a.stale ? ' <span class="stale">stale</span>' : ""}</div></td>
+      ${showClass ? `<td class="sub">${CLASS_NAME[a.asset_class]}</td>` : ""}
+      <td class="r num">${fmtPrice(a.price)}</td>
+      <td class="r num ${a.chg_1d_pct > 0 ? "up" : a.chg_1d_pct < 0 ? "dn" : ""}">${fmtPct(a.chg_1d_pct)}</td>
+      <td class="r">${meter(a.score)}</td>
+      <td class="r num" style="font-weight:600;color:var(--tc)">${fmtScore(a.score)}</td>
+      <td>${pill(a.label, a.score)}${a.label_5d_ago && a.label_5d_ago !== a.label ? `<div class="nm">was ${esc(a.label_5d_ago)} 5 bars ago</div>` : ""}</td>
+      <td class="conf">${esc(a.confidence)}${a.agreement_pct != null ? ` · ${a.agreement_pct}% agree` : ""}</td>
+    </tr>`).join("")}
+  </tbody></table>`;
+}
+
+function verdict(a){
+  const dir = a.score >= 15 ? "up" : a.score <= -15 ? "down" : null;
+  const top = a.reasons.slice(0,2).map(r => r.signal.toLowerCase()).join(" and ");
+  if (!dir) return `Signals are mixed, so there's no clear edge either way. The score needs to move past ±15 before it leans one way.`;
+  const strength = Math.abs(a.score) >= 40 ? "Trend signals line up" : "The balance tips";
+  return `${strength} ${dir === "up" ? "bullish" : "bearish"}, led by ${esc(top)}. These signals work over weeks to months, not hours.${a.confidence === "Low" ? " Confidence is low on this one." : ""}`;
+}
+function histHTML(a){
+  const b = a.backtest || {};
+  if (!b.overall_hit) return `<p class="hist sub">Not enough history to check how this score has performed on ${esc(a.symbol)}.</p>`;
+  const pct = x => x == null ? "—" : Math.round(x*100) + "%";
+  const edge = Math.round((b.overall_hit - 0.5) * 100);
+  return `<p class="hist"><strong>Track record on ${esc(a.symbol)}</strong> (${esc(b.from)} to ${esc(b.to)}, checked every ${b.horizon_bars} bars, ${b.samples} non-overlapping samples): when the score said bullish, price was higher ${b.horizon_bars} bars later <strong>${pct(b.bull_hit)}</strong> of the time (${b.bull_calls} calls). When it said bearish, price was lower <strong>${pct(b.bear_hit)}</strong> of the time (${b.bear_calls} calls). Overall it was right ${pct(b.overall_hit)} of the time, against ${pct(b.base_rate_up)} for guessing "up" every time. ${edge <= 2 ? "That's little or no edge on this asset." : "That's a real but modest edge, with plenty of wrong calls."}</p>`;
+}
+
+function renderDetail(){
+  const box = $("#detail"); if (!box) return;
+  const a = (DATA?.assets || []).find(x => x.symbol === SELECTED);
+  if (!a || a.status !== "ok") { box.innerHTML = ""; return; }
+  const maxC = Math.max(10, ...a.reasons.map(r => Math.abs(r.contribution)));
+  box.innerHTML = `<section class="detail ${tone(a.score)}" aria-label="${esc(a.symbol)} detail">
+    <div class="dhead"><h2>${esc(a.symbol)} · ${esc(a.name)}</h2><span class="px">${fmtPrice(a.price)}</span>
+      <span class="num ${a.chg_1d_pct >= 0 ? "up" : "dn"}">${fmtPct(a.chg_1d_pct)}</span>
+      ${pill(a.label + " " + fmtScore(a.score), a.score)}
+      <span class="sub">close of ${esc(a.as_of)}</span></div>
+    <p class="verdict">${verdict(a)}</p>
+    <div class="grid2">
+      <div style="display:grid;gap:8px">
+        <div class="legend"><span><i style="border-color:var(--ink)"></i>Price</span><span><i style="border-color:var(--accent);border-top-style:dashed"></i>50-day avg</span><span><i style="border-color:var(--warn)"></i>200-day avg</span><span>Bars below: daily score</span></div>
+        <div class="chart" id="chart"><div class="tip" id="tip"></div></div>
+      </div>
+      <div style="display:grid;gap:12px;align-content:start">
+        <h3>What's driving the score</h3>
+        <div class="reasons">${a.reasons.map(r => {
+          const w = Math.abs(r.contribution) / maxC * 50, left = r.contribution >= 0 ? 50 : 50 - w;
+          return `<div class="rs"><span>${esc(r.signal)} <span class="sub">(${Math.round(r.weight*100)}%)</span></span>
+            <div class="rbar"><i style="left:${left}%;width:${w}%;background:${r.contribution >= 0 ? "var(--sbull)" : "var(--sbear)"}"></i><b></b></div>
+            <span class="num" style="text-align:right">${r.contribution > 0 ? "+" : ""}${r.contribution.toFixed(0)}</span></div>`; }).join("")}</div>
+        <div class="facts">
+          <div class="fact"><div class="k">RSI 14</div><div class="v">${a.rsi14 ?? "—"}</div></div>
+          <div class="fact"><div class="k">50-day avg</div><div class="v">${fmtPrice(a.sma50)}</div></div>
+          <div class="fact"><div class="k">200-day avg</div><div class="v">${fmtPrice(a.sma200)}</div></div>
+          <div class="fact"><div class="k">Avg daily range</div><div class="v">${a.atr14_pct != null ? a.atr14_pct + "%" : "—"}</div></div>
+        </div>
+        ${a.flags.length ? `<div class="flags">${a.flags.map(f => `<div class="flag">${esc(f)}</div>`).join("")}</div>` : ""}
+      </div>
+    </div>
+    ${levelsHTML(a)}
+    ${histHTML(a)}
+    <div class="sub">${esc(a.source || "")}</div>
+  </section>`;
+  drawChart(a);
+}
+
+function drawChart(a){
+  const el = $("#chart"), tip = $("#tip"), H = a.history || [];
+  if (H.length < 2) return;
+  const W = Math.max(320, el.clientWidth || 640), Ht = 300, padL = 8, padR = 64, padT = 10, priceH = 210, gap = 14, scoreH = 50;
+  const vals = H.flatMap(h => [h.close, h.sma50, h.sma200]).filter(v => v != null);
+  let lo = Math.min(...vals), hi = Math.max(...vals); const pad = (hi - lo) * 0.06 || hi * 0.01; lo -= pad; hi += pad;
+  const x = i => padL + i * (W - padL - padR) / (H.length - 1);
+  const y = v => padT + (hi - v) / (hi - lo) * priceH;
+  const sy0 = padT + priceH + gap, sMid = sy0 + scoreH / 2, sy = s => sMid - s / 100 * scoreH / 2;
+  const path = k => { let d = "", on = false; H.forEach((h,i) => { if (h[k] == null) { on = false; return; } d += (on ? "L" : "M") + x(i).toFixed(1) + " " + y(h[k]).toFixed(1); on = true; }); return d; };
+  const grid = [];
+  for (let i = 0; i <= 4; i++){ const v = lo + (hi - lo) * i / 4; grid.push(`<line x1="${padL}" x2="${W-padR}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)"/><text x="${W-padR+6}" y="${y(v)+4}" font-size="11" fill="var(--muted)" font-family="var(--mono)">${fmtPrice(v)}</text>`); }
+  const area = path("close") + `L${x(H.length-1)} ${padT+priceH}L${x(0)} ${padT+priceH}Z`;
+  const bw = Math.max(1, (W - padL - padR) / H.length - 0.5);
+  const col = s => s >= 40 ? "var(--sbull)" : s >= 15 ? "var(--lbull)" : s > -15 ? "var(--flat)" : s > -40 ? "var(--lbear)" : "var(--sbear)";
+  const bars = H.map((h,i) => h.score == null ? "" : `<rect x="${(x(i)-bw/2).toFixed(1)}" y="${Math.min(sMid, sy(h.score)).toFixed(1)}" width="${bw.toFixed(1)}" height="${Math.abs(sy(h.score)-sMid).toFixed(1)}" fill="${col(h.score)}"/>`).join("");
+  const last = H[H.length-1];
+  const months = []; let pm = "";
+  H.forEach((h,i) => { const m = h.date.slice(0,7); if (m !== pm) { pm = m; if (i > 4 && i < H.length - 4) months.push(`<text x="${x(i)}" y="${Ht-2}" font-size="11" fill="var(--muted)" text-anchor="middle">${new Date(h.date+"T00:00:00Z").toLocaleString("en-GB",{month:"short",timeZone:"UTC"})}</text>`); } });
+  el.insertAdjacentHTML("beforeend", `<svg viewBox="0 0 ${W} ${Ht}" width="100%" role="img" aria-label="${esc(a.symbol)} price, moving averages and daily score, last ${H.length} bars">
+    ${grid.join("")}
+    <path d="${area}" fill="var(--accent)" opacity=".07"/>
+    <path d="${path("sma200")}" fill="none" stroke="var(--warn)" stroke-width="1.6"/>
+    <path d="${path("sma50")}" fill="none" stroke="var(--accent)" stroke-width="1.6" stroke-dasharray="5 3"/>
+    <path d="${path("close")}" fill="none" stroke="var(--ink)" stroke-width="1.6"/>
+    <circle cx="${x(H.length-1)}" cy="${y(last.close)}" r="3.5" fill="var(--ink)"/>
+    <line x1="${padL}" x2="${W-padR}" y1="${sMid}" y2="${sMid}" stroke="var(--line)"/>
+    <line x1="${padL}" x2="${W-padR}" y1="${sy(15)}" y2="${sy(15)}" stroke="var(--line)" stroke-dasharray="2 3"/>
+    <line x1="${padL}" x2="${W-padR}" y1="${sy(-15)}" y2="${sy(-15)}" stroke="var(--line)" stroke-dasharray="2 3"/>
+    ${bars}
+    <text x="${W-padR+6}" y="${sy(100)+9}" font-size="11" fill="var(--muted)" font-family="var(--mono)">+100</text>
+    <text x="${W-padR+6}" y="${sMid+4}" font-size="11" fill="var(--muted)" font-family="var(--mono)">0</text>
+    <text x="${W-padR+6}" y="${sy(-100)}" font-size="11" fill="var(--muted)" font-family="var(--mono)">−100</text>
+    ${months.join("")}
+    <line id="hair" x1="0" x2="0" y1="${padT}" y2="${sy0+scoreH}" stroke="var(--muted)" stroke-width="1" visibility="hidden"/>
+    <rect x="${padL}" y="0" width="${W-padL-padR}" height="${Ht}" fill="transparent"/>
+  </svg>`);
+  const svg = el.querySelector("svg"), hair = svg.querySelector("#hair");
+  svg.addEventListener("pointermove", ev => {
+    const r = svg.getBoundingClientRect(), px = (ev.clientX - r.left) * W / r.width;
+    const i = Math.max(0, Math.min(H.length - 1, Math.round((px - padL) / (W - padL - padR) * (H.length - 1)))), h = H[i];
+    hair.setAttribute("x1", x(i)); hair.setAttribute("x2", x(i)); hair.setAttribute("visibility", "visible");
+    tip.style.display = "block";
+    tip.innerHTML = `${esc(h.date)}<br>Close ${fmtPrice(h.close)}<br>50d ${fmtPrice(h.sma50)} · 200d ${fmtPrice(h.sma200)}<br>Score ${fmtScore(h.score)}`;
+    const tx = x(i) * r.width / W, tw = tip.offsetWidth;
+    tip.style.left = Math.max(0, Math.min(r.width - tw, tx + 10 > r.width - tw ? tx - tw - 10 : tx + 10)) + "px"; tip.style.top = "8px";
+  });
+  svg.addEventListener("pointerleave", () => { tip.style.display = "none"; hair.setAttribute("visibility","hidden"); });
+}
+
+/* ---------- setups ---------- */
+function setFor(sym){ return (SET?.assets || []).find(s => s.symbol === sym && s.status === "ok"); }
+function relevantEvents(a){
+  const sym = a.symbol, cls = a.asset_class, out = [];
+  for (const i of newsItems()){
+    if (i.past) { if (i.kind === "Post" && cls === "crypto" && new RegExp("\\b" + sym + "\\b").test(i.detail || "")) out.push(i); continue; }
+    const n = daysUntil(i.date); if (n == null || n > 14) continue;
+    const t = (i.title || "") + " " + (i.detail || "");
+    let hit = false;
+    if (i.kind === "Macro"){
+      const usd = /\bUS\b|Fed|FOMC|NFP|payroll/i.test(t);
+      if (cls === "stock" || cls === "crypto" || cls === "bond") hit = usd;
+      if (cls === "index") hit = (usd && /^US/.test(sym)) || (/ECB|European Central/i.test(t) && sym === "GER40") || (/Bank of England|BoE/i.test(t) && sym === "UK100");
+      if (cls === "fx") hit = (usd && /USD/.test(sym)) || (/ECB|European Central/i.test(t) && /EUR/.test(sym)) ||
+        (/Bank of England|BoE/i.test(t) && /GBP/.test(sym)) || (/Bank of Japan|BoJ/i.test(t) && /JPY/.test(sym)) || (/RBA|Reserve Bank of Australia/i.test(t) && /AUD/.test(sym));
+      if (cls === "commodity") hit = usd && /\bUS\b.*(CPI|jobs|payroll|inflation)|Fed|FOMC/i.test(t) && ["GOLD","SILVER","COPPER","WTI"].includes(sym);
+    } else if (i.kind === "Commodity"){
+      hit = cls === "commodity" && (i.affects || []).map(x => String(x).toUpperCase()).includes(sym);
+    } else if (i.kind === "Earnings"){
+      hit = (cls === "stock" && (t.startsWith(sym + " ") || ["SPY","QQQ"].includes(sym))) || (cls === "index" && ["US500","NAS100"].includes(sym));
+    } else if (i.kind === "Unlock"){
+      hit = cls === "crypto" && t.toUpperCase().startsWith(sym + " ");
+    }
+    if (hit) out.push(i);
+  }
+  return out.slice(0, 3);
+}
+function ladderSVG(s){
+  const bull = s.direction === "bullish", W = 150, H = 230, top = 10, bot = 10;
+  const pts = [];
+  const lim = 3.5 * s.atr;
+  s.resistances.filter(r => r.dist_atr <= 3.5).slice(0,2).forEach(r => pts.push({p:r.price, k:"res", t:"R"}));
+  s.supports.filter(r => r.dist_atr <= 3.5).slice(0,2).forEach(r => pts.push({p:r.price, k:"sup", t:"S"}));
+  pts.push({p:s.price, k:"price", t:"Now"});
+  if (s.signal_break != null) pts.push({p:s.signal_break, k:"brk", t:"Break"});
+  const vals = pts.map(x => x.p).concat(s.zone ? [s.zone.lo, s.zone.hi] : []);
+  let hi = Math.max(...vals), lo = Math.min(...vals); const pad = (hi - lo) * 0.06 || s.atr * 0.2; hi += pad; lo -= pad;
+  const y = v => top + (hi - v) / (hi - lo) * (H - top - bot);
+  const col = {res:"var(--sbear)", sup:"var(--sbull)", price:"var(--ink)", brk:"var(--warn)"};
+  let g = "";
+  if (s.zone) g += `<rect x="4" y="${y(s.zone.hi).toFixed(1)}" width="62" height="${Math.max(2, y(s.zone.lo) - y(s.zone.hi)).toFixed(1)}" fill="var(--tc)" opacity=".22" rx="2"/>
+    <text x="35" y="${((y(s.zone.hi) + y(s.zone.lo)) / 2 + 4).toFixed(1)}" font-size="10" text-anchor="middle" fill="var(--tc)" font-weight="600">zone</text>`;
+  pts.sort((a,b) => b.p - a.p);
+  let lastY = -99;
+  for (const x of pts){
+    const yy = y(x.p); let ly = Math.max(yy + 4, lastY + 13); lastY = ly;
+    g += `<line x1="4" x2="66" y1="${yy.toFixed(1)}" y2="${yy.toFixed(1)}" stroke="${col[x.k]}" stroke-width="${x.k === "price" ? 2.2 : 1.4}" ${x.k === "res" || x.k === "sup" ? 'stroke-dasharray="4 3"' : ""}/>`;
+    if (x.k === "price") g += `<circle cx="66" cy="${yy.toFixed(1)}" r="3.5" fill="var(--ink)"/>`;
+    g += `<text x="74" y="${ly.toFixed(1)}" font-size="10.5" font-family="var(--mono)" fill="${col[x.k]}"><tspan font-weight="600">${x.t}</tspan> ${fmtPrice(x.p)}</text>`;
+  }
+  return `<svg viewBox="0 0 ${W} ${Math.max(H, lastY + 8)}" role="img" aria-label="${esc(s.symbol)} price ladder: supports, resistances, zone and signal-break level">${g}</svg>`;
+}
+function timeframeHTML(cls, dir){
+  const g = grp(cls, dir), h = g && g.hold; if (!h) return "";
+  const bpw = h.bars_per_week || 5, maxB = STATS.max_hold_bars || 60;
+  const wk = b => b / bpw < 1 ? `${b} day${b === 1 ? "" : "s"}` : `${Math.round(b / bpw * 10) / 10} week${b / bpw >= 1.5 ? "s" : ""}`;
+  const caps = Object.entries(h.avg_r_by_max_hold).map(([b, r]) => [+b, r]);
+  const mx = Math.max(0.05, ...caps.map(c => Math.abs(c[1])));
+  const bars = caps.map(([b, r]) => `<div class="hc"><span class="sub">max ${wk(b)}</span><span class="hbar"><i style="width:${Math.abs(r) / mx * 100}%;background:${r > 0.02 ? "var(--sbull)" : r < -0.02 ? "var(--sbear)" : "var(--flat)"}"></i></span><span class="num" style="text-align:right">${r > 0 ? "+" : ""}${r.toFixed(2)}R</span></div>`).join("");
+  return `<div class="timeframe"><h3 style="font-size:13px;color:var(--muted)">Timeframe</h3>
+    <p style="margin:0"><strong>Swing to position trade: up to ${wk(maxB)}.</strong> Not an intraday setup. It runs on daily closes, and holds of a few hours weren't tested.</p>
+    <ul class="weigh">
+      <li>Losing trades were usually stopped within ${wk(h.loser_median_bars)} (3 in 4 within ${wk(h.loser_p75_bars)}); about ${Math.round(h.stopped_within_1_bar * 100)}% were stopped the day they filled.</li>
+      <li>${h.winners_at_time_limit >= 0.5 ? `Winners mostly ran the full ${wk(maxB)}: the score rarely faded before then.` : `Winners were typically held about ${wk(h.winner_median_bars)}.`}</li>
+      <li>Closing earlier earned less per trade (tested):</li></ul>
+    <div class="hcaps">${bars}</div></div>`;
+}
+function setupCard(s){
+  const a = (DATA?.assets || []).find(x => x.symbol === s.symbol) || {};
+  const bull = s.direction === "bullish", z = s.zone;
+  const zname = bull ? "Pullback zone" : "Bounce zone";
+  const where = z.in_zone ? `<span class="zchip">In the zone now</span>` : `<span class="sub">${z.dist_atr} daily range${z.dist_atr === 1 ? "" : "s"} away</span>`;
+  const weigh = [];
+  weigh.push(esc(z.basis) + ".");
+  s.notes.filter(n => !/reward for the risk/.test(n)).forEach(n => weigh.push(esc(n)));
+  (a.flags || []).forEach(f => weigh.push(esc(f)));
+  for (const e of relevantEvents(a)) weigh.push(`<strong>${esc(e.title)}</strong> ${e.past ? "(" + esc(e.date) + ")" : esc(whenWord(e.date)).toLowerCase() + (e.time ? ", " + esc(e.time) : "")}. ${e.kind === "Macro" ? "Expect sharp two-way moves around the release; levels often get overshot." : e.kind === "Earnings" ? "Earnings can gap the price straight past any level." : e.kind === "Unlock" ? "New supply hitting the market." : esc(e.detail || "")}`);
+  const b = a.backtest || {};
+  if (b.overall_hit) weigh.push(`Track record on ${esc(s.symbol)}: the score called the next ${b.horizon_bars} bars right ${Math.round(b.overall_hit*100)}% of the time (${(b.bull_calls||0) + (b.bear_calls||0)} calls), against ${Math.round(b.base_rate_up*100)}% for always guessing "up".`);
+  if (a.asset_class === "fx") weigh.push("Currencies are usually traded with leverage, which multiplies gains and losses alike.");
+  if (a.asset_class === "commodity") weigh.push("Futures are leveraged and the front-month contract rolls every month or two; a roll can move the quoted price without any real market move.");
+  if (a.asset_class === "stock") weigh.push("Stocks can gap overnight and over weekends, jumping past the signal-break level.");
+  if (a.asset_class === "crypto") weigh.push("Crypto trades 24/7 and moves of two or three daily ranges in a day are common.");
+  if (a.asset_class === "index") weigh.push("Index futures and CFDs gap at the US cash open and around data releases; check your firm's news-trading rule.");
+  if (a.asset_class === "bond") weigh.push("Treasury futures move most on Fed decisions, US inflation and jobs data.");
+  for (const o of overlapsFor(s.symbol)) weigh.push(`Moves with <strong>${esc(o.sym)}</strong> (${o.c.toFixed(2)} correlation over 90 days). Holding both is close to one bigger position.`);
+  return `<article class="setup ${tone(s.score)}">
+    <div class="shead"><span class="sym" style="font-size:20px">${esc(s.symbol)}</span><span class="nm">${esc(a.name || "")}</span>${pill((s.label || "") + " " + fmtScore(s.score), s.score)}<span class="px">${fmtPrice(s.price)}</span><span class="sub">${esc(s.confidence || "")} confidence</span></div>
+    <div class="sbody">
+      <div class="ladder">${ladderSVG(s)}</div>
+      <dl class="kv">
+        <div><dt>${zname}</dt><dd>${fmtPrice(z.lo)} – ${fmtPrice(z.hi)}</dd></div>
+        <div><dt>Price now</dt><dd>${where}</dd></div>
+        <div><dt>Signal breaks on a close ${bull ? "below" : "above"}</dt><dd style="color:var(--warn)">${fmtPrice(s.signal_break)}</dd></div>
+        <div><dt>Timeframe</dt><dd>days to ${a.asset_class === "crypto" ? "~9" : "~12"} weeks</dd></div>
+        <div><dt>Exit when score closes</dt><dd>${bull ? "< +15" : "> −15"} <span class="sub">(now ${fmtScore(s.score)})</span></dd></div>
+        <div><dt>First ${bull ? "resistance" : "support"}</dt><dd>${s.target.price != null ? fmtPrice(s.target.price) : "none nearby"}</dd></div>
+        <div><dt>Typical daily move</dt><dd>±${fmtPrice(s.atr)} (${s.atr_pct}%)</dd></div>
+        <div><dt>Trend flips at 200-day avg</dt><dd>${fmtPrice(s.trend_flip)}</dd></div>
+      </dl>
+    </div>
+    ${testedLine(a.asset_class, s.direction)}
+    ${timeframeHTML(a.asset_class, s.direction)}
+    <div style="display:grid;gap:6px"><h3 style="font-size:13px;color:var(--muted)">Things to weigh</h3><ul class="weigh">${weigh.map(w => `<li>${w}</li>`).join("")}</ul></div>
+  </article>`;
+}
+function setupsHTML(cls){
+  if (!SET) return "";
+  // overview: strongest setup per market, tested-profitable directions first, so the three cards aren't one bet
+  const clsOf = sym => (DATA?.assets || []).find(a => a.symbol === sym)?.asset_class;
+  const cand = (SET.assets || []).filter(s => s.status === "ok" && s.zone && Math.abs(s.score) >= 40 && s.confidence !== "Low")
+    .map(s => ({s, c: clsOf(s.symbol), e: (grp(clsOf(s.symbol), s.direction) || {}).avg_r ?? 0}))
+    .sort((x, y) => ((y.e > 0.05) - (x.e > 0.05)) || Math.abs(y.s.score) - Math.abs(x.s.score));
+  const seenCls = new Set(); let syms = [];
+  for (const x of cand){ if (seenCls.has(x.c)) continue; seenCls.add(x.c); syms.push(x.s.symbol); if (syms.length === 3) break; }
+  if (cls){
+    syms = (SET.assets || []).filter(s => s.status === "ok" && s.zone && Math.abs(s.score) >= 40 && s.confidence !== "Low" &&
+      (DATA?.assets || []).some(a => a.symbol === s.symbol && a.asset_class === cls))
+      .sort((a,b) => Math.abs(b.score) - Math.abs(a.score)).slice(0, 2).map(s => s.symbol);
+  }
+  const cards = syms.map(setFor).filter(s => s && s.zone);
+  if (!cards.length) return "";
+  return `<div class="section"><div class="sh"><h2>Swing setups</h2><span class="pill t-flat">days to weeks</span><span class="sub">Levels from ${esc(ago(SET.generated_at))}</span></div>
+    <p class="sub" style="margin:0;max-width:90ch">The strongest signals right now, with the levels the rules point to. The tested rules: a limit order in the zone, a stop at the signal-break level, and an exit when the score falls back inside ±15. Letting trades run like that had an edge on bullish setups; taking profit at the next level had none. These are mechanical reference levels, not recommendations. Size positions in the Funded account tab.</p>
+    <div class="setups">${cards.map(setupCard).join("")}</div></div>`;
+}
+function levelsHTML(a){
+  const s = setFor(a.symbol); if (!s) return "";
+  const li2 = l => `<li>${fmtPrice(l.price)} <span class="sub">${l.touches}× · ${esc(l.last_touch)}</span></li>`;
+  return `<div style="display:grid;gap:8px"><h3>Key levels</h3><div class="lvls">
+    <div><span class="sub">Resistance above</span><ul>${s.resistances.length ? s.resistances.map(li2).join("") : `<li class="sub">None in the last year</li>`}</ul></div>
+    <div><span class="sub">Support below</span><ul>${s.supports.length ? s.supports.map(li2).join("") : `<li class="sub">None in the last year</li>`}</ul></div></div>
+    ${s.zone ? `<p class="hist">${s.direction === "bullish" ? "Pullback" : "Bounce"} zone ${fmtPrice(s.zone.lo)} – ${fmtPrice(s.zone.hi)}; the signal breaks on a daily close ${s.direction === "bullish" ? "below" : "above"} ${fmtPrice(s.signal_break)}.</p>` : ""}</div>`;
+}
+
+/* ---------- tested setup stats, overlaps ---------- */
+const GROUP_NAME = {stock:"Stocks", index:"Indices", fx:"Forex", commodity:"Commodities", bond:"Bonds", crypto:"Crypto"};
+function grp(cls, dir){ return STATS?.groups?.[`${cls}:${dir}`]; }
+function testedLine(cls, dir){
+  const g = grp(cls, dir); if (!g) return "";
+  const good = g.avg_r > 0.05, bad = g.avg_r < -0.05;
+  return `<div class="tested ${good ? "t-sbull" : bad ? "t-sbear" : "t-flat"}"><strong>Tested ${esc(GROUP_NAME[cls] || cls)} ${dir} setups (2005–2026, ${g.trades.toLocaleString("en-GB")} trades):</strong>
+    won ${Math.round(g.win_rate*100)}% · average win ${g.avg_win_r > 0 ? "+" : ""}${g.avg_win_r}R · average loss ${g.avg_loss_r}R ·
+    <strong>${g.avg_r > 0 ? "+" : ""}${g.avg_r.toFixed(2)}R per trade</strong> · usual losing run ${g.losing_streak_median_asset} in a row${bad ? " · this direction lost money" : ""}</div>`;
+}
+let CORR = null;
+function corrMatrix(){
+  if (CORR || !DATA) return CORR;
+  const series = {};
+  for (const a of DATA.assets || []) if (a.status === "ok" && a.history) {
+    const m = {}; a.history.forEach(h => m[h.date] = h.close); series[a.symbol] = m;
+  }
+  const syms = Object.keys(series); const dates = [...new Set(syms.flatMap(s => Object.keys(series[s])))].sort().slice(-91);
+  const ret = {};
+  for (const s of syms){ const r = []; for (let i = 1; i < dates.length; i++){ const p0 = series[s][dates[i-1]], p1 = series[s][dates[i]]; r.push(p0 && p1 ? Math.log(p1/p0) : null); } ret[s] = r; }
+  CORR = {};
+  for (const a of syms) for (const b of syms) if (a < b){
+    const x = [], y = []; ret[a].forEach((v, i) => { const w = ret[b][i]; if (v != null && w != null && v !== 0 && w !== 0){ x.push(v); y.push(w); } });
+    if (x.length < 40) continue;
+    const mx = x.reduce((p,q)=>p+q,0)/x.length, my = y.reduce((p,q)=>p+q,0)/y.length;
+    let sxy = 0, sxx = 0, syy = 0; x.forEach((v,i) => { sxy += (v-mx)*(y[i]-my); sxx += (v-mx)**2; syy += (y[i]-my)**2; });
+    const c = sxy / Math.sqrt(sxx*syy); if (isFinite(c)) CORR[a + "|" + b] = c;
+  }
+  return CORR;
+}
+function corrOf(a, b){ const m = corrMatrix() || {}; return a < b ? m[a + "|" + b] : m[b + "|" + a]; }
+function overlapsFor(sym){
+  const strong = (DATA?.assets || []).filter(a => a.status === "ok" && Math.abs(a.score) >= 40 && a.symbol !== sym);
+  return strong.map(a => ({sym: a.symbol, c: corrOf(sym, a.symbol)})).filter(o => o.c != null && Math.abs(o.c) >= 0.7).sort((p,q) => Math.abs(q.c) - Math.abs(p.c)).slice(0, 2);
+}
+
+function holdTable(){
+  const order = ["stock","index","commodity","bond","fx","crypto"], caps = ["5","10","20","40","60"];
+  const rows = order.map(c => [c, grp(c, "bullish")]).filter(x => x[1] && x[1].hold).map(([c, g]) => `<tr><td>${esc(GROUP_NAME[c])} bullish</td>${caps.map(k => { const r = g.hold.avg_r_by_max_hold[k]; return `<td class="r num ${r > 0.02 ? "up" : r < -0.02 ? "dn" : ""}">${r > 0 ? "+" : ""}${r.toFixed(2)}R</td>`; }).join("")}<td class="r num">${g.hold.loser_median_bars} days</td></tr>`).join("");
+  return rows ? `<h3 style="margin-top:6px">Holding time vs result (bullish setups, per trade)</h3><div class="board"><table><thead><tr><th>Setups</th><th class="r">Max 1 week</th><th class="r">2 weeks</th><th class="r">4 weeks</th><th class="r">8 weeks</th><th class="r">12 weeks</th><th class="r">Losers stopped (median)</th></tr></thead><tbody>${rows}</tbody></table></div>
+    <p class="sub" style="margin:0">The edge comes from holding winners for weeks. Closed within a week, these setups made about nothing. If your firm limits holding time, weekends or overnight positions, expect less. Crypto columns are in calendar days (7 per week).</p>` : "";
+}
+/* ---------- intraday ---------- */
+function ukTime(iso){ try { return new Date(iso).toLocaleTimeString("en-GB", {timeZone:"Europe/London", hour:"2-digit", minute:"2-digit"}); } catch(e){ return ""; } }
+function intradayCard(p){
+  const st = ISTATS?.assets?.[p.symbol], cs = ISTATS?.classes?.crypto;
+  const bull = p.bias === "bullish", sc = bull ? 50 : -50;
+  const acc = loadAcc(), riskAmt = acc.size * acc.risk / 100, C = acc.ccy || "$";
+  const dist = p.entry != null && p.stop != null ? Math.abs(p.entry - p.stop) : null;
+  const units = dist ? riskAmt / dist : null;
+  const chip = {"in trade":"t-lbull","target hit":"t-sbull","closed at session end":"t-flat","stopped":"t-sbear","no fill":"t-flat"}[p.status] || "t-flat";
+  const live = p.r != null ? `<span class="num" style="font-weight:600;color:${p.r >= 0 ? "var(--sbull)" : "var(--sbear)"}">${p.r > 0 ? "+" : ""}${p.r.toFixed(2)}R${p.status === "in trade" ? " so far" : ""}</span>` : "";
+  return `<article class="setup ${p.bias ? tone(sc) : "t-flat"}">
+    <div class="shead"><span class="sym" style="font-size:19px">${esc(p.symbol)}</span>${p.bias ? pill(bull ? "Long breakout" : "Short breakdown", sc) : pill("No setup", 0)}
+      <span class="pill ${chip}">${esc(p.status)}</span>${live}</div>
+    ${p.bias ? `<dl class="kv">
+      <div><dt>Range (08:00–09:00 UK)</dt><dd>${p.entry != null ? fmtPrice(Math.min(p.entry, p.stop)) + " – " + fmtPrice(Math.max(p.entry, p.stop)) : "forms at 09:00"}</dd></div>
+      <div><dt>${bull ? "Buy stop at range high" : "Sell stop at range low"}</dt><dd>${p.entry != null ? fmtPrice(p.entry) : "—"}</dd></div>
+      <div><dt>Stop (other side of range)</dt><dd style="color:var(--warn)">${p.stop != null ? fmtPrice(p.stop) : "—"}</dd></div>
+      <div><dt>Exit</dt><dd>20:00 UK, flat by session end</dd></div>
+      <div><dt>Size at your ${acc.risk}% risk</dt><dd>${units ? (units >= 10 ? Math.floor(units) : units.toFixed(3)) + " coins (" + C + Math.round(riskAmt).toLocaleString("en-GB") + ")" : "—"}</dd></div>
+    </dl>` : `<p class="sub" style="margin:0">Daily score ${fmtScore(p.score)} is inside ±15, so no breakout trade today.</p>`}
+    ${st ? `<div class="tested ${st.avg_r > 0.02 ? "t-sbull" : "t-flat"}"><strong>Tested on ${esc(p.symbol)} (${st.n} sessions):</strong> won ${Math.round(st.win*100)}% · ${st.avg_r > 0 ? "+" : ""}${st.avg_r.toFixed(2)}R per trade. Wins are rarer but bigger; most losers are stopped inside the range.</div>` : ""}
+  </article>`;
+}
+function intradayHTML(cls){
+  if (!ISTATS) return "";
+  if (cls && cls !== "crypto"){
+    const c = ISTATS.classes?.[cls], note = ISTATS.notes?.[cls];
+    if (!c && !note) return "";
+    return `<div class="section"><div class="sh"><h2>Intraday setups</h2><span class="pill t-flat">same day</span></div>
+      <div class="notice" style="color:var(--ink)">No intraday rule for ${esc(CLASS_NAME[cls] || cls)} held up in testing, so none are shown. ${esc(note || "")}${c ? ` Best rule in the first year made ${c.dev.avg_r > 0 ? "+" : ""}${c.dev.avg_r.toFixed(2)}R per trade, then ${c.test.avg_r > 0 ? "+" : ""}${c.test.avg_r.toFixed(2)}R in the second year and ${c.holdout.avg_r > 0 ? "+" : ""}${c.holdout.avg_r.toFixed(2)}R on unseen assets.` : ""}</div></div>`;
+  }
+  const plans = (INTRA?.plans || []).filter(p => p.asset_class === "crypto");
+  if (!plans.length) return "";
+  const cs = ISTATS.classes?.crypto;
+  plans.sort((a, b) => (b.bias ? 1 : 0) - (a.bias ? 1 : 0));
+  return `<div class="section"><div class="sh"><h2>Intraday setups</h2><span class="pill t-flat">same day · crypto</span><span class="sub">Updated ${esc(ago(INTRA.generated_at))}</span></div>
+    <p class="sub" style="margin:0;max-width:90ch">London range breakout: the 08:00–09:00 UK hourly candle sets the range. In the direction of the daily score, a stop order sits at the range high (bullish) or low (bearish) from 09:00, the stop goes at the other side of the range, and everything is closed at 20:00 UK. ${cs ? `Tested on 2 years of hourly data: ${cs.test.avg_r > 0 ? "+" : ""}${cs.test.avg_r.toFixed(2)}R per trade in the second year and ${cs.holdout.avg_r > 0 ? "+" : ""}${cs.holdout.avg_r.toFixed(2)}R on 5 unseen coins, after costs, winning about a quarter of the time.` : ""} Crypto is the only market where an intraday rule held up.</p>
+    <div class="setups">${plans.map(intradayCard).join("")}</div></div>`;
+}
+function intradayTestedHTML(){
+  if (!ISTATS) return "";
+  const order = ["crypto","index","commodity","fx","stock"];
+  const rows = order.filter(c => ISTATS.classes[c]).map(c => { const x = ISTATS.classes[c], f = v => v == null ? "—" : (v > 0 ? "+" : "") + v.toFixed(2) + "R";
+    return `<tr class="${x.adopted ? "t-sbull" : "t-flat"}"><td>${esc(GROUP_NAME[c])}</td><td class="r num">${f(x.dev.avg_r)}</td><td class="r num">${f(x.test.avg_r)}</td><td class="r num">${f(x.holdout.avg_r)}</td><td>${x.adopted ? `<span class="pill t-sbull">Shown</span>` : `<span class="pill t-flat">Not shown</span>`}</td></tr>`; }).join("");
+  const dt = ISTATS.depth_test || {};
+  const drows = order.filter(c => dt[c]).map(c => `<tr><td>${esc(GROUP_NAME[c])}</td>${["0.0","0.25","0.5"].map(k => `<td class="r num ${dt[c][k] > 0.02 ? "up" : dt[c][k] < -0.02 ? "dn" : ""}">${dt[c][k] > 0 ? "+" : ""}${dt[c][k].toFixed(2)}R</td>`).join("")}</tr>`).join("");
+  let live = "";
+  if (INTRA){ const s = INTRA.summary || {}; live = `<p class="sub" style="margin:0">Live intraday log since ${esc(INTRA.started || "")}: ${s.closed || 0} sessions closed${s.closed ? `, ${s.avg_r > 0 ? "+" : ""}${s.avg_r.toFixed(2)}R per trade, ${Math.round(s.win_rate*100)}% won` : ""}.</p>`; }
+  return `<section class="section"><div class="sh"><h2>Intraday rules (tested)</h2><span class="sub">${esc(ISTATS.period)} hourly data · best rule picked on the first year, checked on the second year and unseen assets</span></div>
+    <div class="board"><table><thead><tr><th>Market</th><th class="r">First year</th><th class="r">Second year</th><th class="r">Unseen assets</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>
+    <h3 style="margin-top:6px">Does a deeper entry (nearer the stop) help?</h3>
+    <div class="board"><table><thead><tr><th>Market</th><th class="r">Enter at the open</th><th class="r">0.25 ATR deeper</th><th class="r">0.5 ATR deeper</th></tr></thead><tbody>${drows}</tbody></table></div>
+    <p class="sub" style="margin:0">Same stop size and target in each column. Deeper limit orders fill less often, and when they do fill it's mostly on days the move is reversing, so the result gets worse. ${esc(ISTATS.notes?.index || "")}</p>${live}</section>`;
+}
+/* ---------- funded account settings ---------- */
+const PRESETS = {
+  twostep: {label:"2-step CFD challenge (typical)", target:10, daily:5, maxloss:10, trailing:false},
+  onestep: {label:"1-step CFD challenge (typical)", target:10, daily:3, maxloss:6, trailing:true},
+  futures: {label:"Futures evaluation (typical)", target:6, daily:2, maxloss:4, trailing:true},
+  custom:  {label:"Custom", target:10, daily:5, maxloss:10, trailing:false},
+};
+const DEFAULT_ACC = {preset:"twostep", size:100000, ccy:"$", target:10, daily:5, maxloss:10, trailing:false, risk:0.5, maxopen:3, news:2, group:"stock:bullish", tpw:3, inst:"micro"};
+function loadAcc(){ try { return Object.assign({}, DEFAULT_ACC, JSON.parse(localStorage.getItem("sd-acc") || "{}")); } catch(e){ return Object.assign({}, DEFAULT_ACC); } }
+function saveAcc(a){ try { localStorage.setItem("sd-acc", JSON.stringify(a)); } catch(e){} }
+
+/* contract value per 1.0 move of the quoted price (futures: exchange spec; CFD: typical, check your platform) */
+const SPEC = {
+  US500:{fut:["ES",50],micro:["MES",5],cfd:1}, NAS100:{fut:["NQ",20],micro:["MNQ",2],cfd:1}, US30:{fut:["YM",5],micro:["MYM",0.5],cfd:1},
+  US2000:{fut:["RTY",50],micro:["M2K",5],cfd:1}, GER40:{fut:["FDAX, €",25],micro:["FDXS, €",1],cfd:1}, UK100:{fut:["Z (FTSE), £",10],cfd:1},
+  GOLD:{fut:["GC",100],micro:["MGC",10],cfd:100}, SILVER:{fut:["SI",5000],micro:["SIL",1000],cfd:5000}, WTI:{fut:["CL",1000],micro:["MCL",100],cfd:1000},
+  NATGAS:{fut:["NG",10000],micro:["QG",2500],cfd:10000}, COPPER:{fut:["HG",25000],micro:["MHG",2500]}, CORN:{fut:["ZC",50],micro:["XC",10]},
+  WHEAT:{fut:["ZW",50],micro:["XW",10]}, SOYBEAN:{fut:["ZS",50],micro:["XK",10]},
+  ZT:{fut:["ZT",2000]}, ZF:{fut:["ZF",1000]}, ZN:{fut:["ZN",1000]}, ZB:{fut:["ZB",1000]},
+  BTC:{fut:["BTC (CME)",5],micro:["MBT",0.1],cfd:1}, ETH:{fut:["ETH (CME)",50],micro:["MET",0.1],cfd:1}, SOL:{cfd:1}, XRP:{cfd:1},
+};
+const STOCKSYM = new Set(["SPY","QQQ","AAPL","MSFT","NVDA","AMZN","TSLA"]);
+function valuePerPoint(sym, price, inst){
+  if (/\//.test(sym)){                                       // FX: 1 standard lot = 100,000 of the base currency
+    const v = /USD$/.test(sym) ? 100000 : /^USD/.test(sym) ? 100000 / price : null;
+    return v ? {name:"standard lot", v} : null;
+  }
+  const sp = SPEC[sym];
+  if (!sp) return STOCKSYM.has(sym) ? {name: inst === "cfd" ? "share CFDs" : "shares", v: 1} : null;
+  if (inst === "cfd") return sp.cfd != null ? {name:"CFD lot (typical size)", v: sp.cfd} : null;
+  const f = inst === "micro" ? (sp.micro || sp.fut) : sp.fut;
+  return f ? {name: f[0] + (inst === "micro" && !sp.micro ? " (no micro)" : ""), v: f[1]} : null;
+}
+
+/* ---------- London time helper ---------- */
+function londonEpoch(date, hhmm){
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date || "") || !/^\d{1,2}:\d{2}$/.test(hhmm || "")) return null;
+  const [y,m,d] = date.split("-").map(Number), [H,M] = hhmm.split(":").map(Number);
+  let t = Date.UTC(y, m-1, d, H, M);
+  try {
+    const parts = new Intl.DateTimeFormat("en-GB", {timeZone:"Europe/London", hour:"2-digit", minute:"2-digit", hourCycle:"h23"}).formatToParts(new Date(t));
+    const lh = +parts.find(p => p.type === "hour").value, lm = +parts.find(p => p.type === "minute").value;
+    let diff = (lh*60 + lm) - (H*60 + M); if (diff > 720) diff -= 1440; if (diff < -720) diff += 1440;
+    t -= diff * 60000;
+  } catch(e){}
+  return t;
+}
+function upcomingNews(hours){
+  const now = Date.now(), out = [];
+  for (const i of newsItems()){
+    if (!["Macro","Commodity","Earnings"].includes(i.kind)) continue;
+    const tm = i.time && /^\d{1,2}:\d{2}/.test(i.time) ? londonEpoch(i.date, i.time.slice(0,5)) : null;
+    if (tm == null) { const n = daysUntil(i.date); if (n != null && n >= 0 && n <= hours/24) out.push({...i, t:null}); continue; }
+    if (tm > now - 3600e3 && tm < now + hours*3600e3) out.push({...i, t: tm});
+  }
+  return out.sort((a,b) => (a.t ?? 9e15) - (b.t ?? 9e15));
+}
+function fmtCountdown(ms){
+  const neg = ms < 0; ms = Math.abs(ms); const h = Math.floor(ms/3600e3), m = Math.floor(ms%3600e3/60e3);
+  const s = h >= 24 ? `${Math.floor(h/24)}d ${h%24}h` : h ? `${h}h ${m}m` : `${m}m`;
+  return neg ? s + " ago" : "in " + s;
+}
+
+/* ---------- challenge simulator ---------- */
+function samplerFor(group){
+  const g = STATS?.groups?.[group]; if (!g) return null;
+  const q = g.r_quantiles; return () => q[Math.floor(Math.random() * q.length)];
+}
+function poisson(l){ let L = Math.exp(-l), k = 0, p = 1; do { k++; p *= Math.random(); } while (p > L); return k - 1; }
+function simulateChallenge(acc, runs, shift){
+  const base = samplerFor(acc.group); if (!base) return null;
+  const draw = shift ? () => base() - shift : base;
+  const risk = acc.risk / 100, tgt = acc.target / 100, dl = acc.daily / 100, ml = acc.maxloss / 100, lam = acc.tpw / 5;
+  let pass = 0, failMax = 0, failDaily = 0, open = 0; const days = [];
+  for (let k = 0; k < runs; k++){
+    let eq = 1, peak = 1, done = false;
+    for (let d = 1; d <= 504 && !done; d++){
+      const n = poisson(lam); let day = 0;
+      for (let j = 0; j < n; j++) day += draw() * risk;
+      eq += day; peak = Math.max(peak, eq);
+      const floor = acc.trailing ? Math.min(peak - ml, 1) : 1 - ml;
+      if (day <= -dl) { failDaily++; done = true; }
+      else if (eq <= floor) { failMax++; done = true; }
+      else if (eq >= 1 + tgt) { pass++; days.push(d); done = true; }
+    }
+    if (!done) open++;
+  }
+  days.sort((a,b) => a-b);
+  return {pass: pass/runs, failMax: failMax/runs, failDaily: failDaily/runs, open: open/runs, medianWeeks: days.length ? days[Math.floor(days.length/2)] / 5 : null};
+}
+
+/* ---------- funded tab ---------- */
+function renderFunded(v){
+  const acc = loadAcc();
+  const groups = Object.keys(STATS?.groups || {}).filter(k => k.endsWith(":bullish")).concat(Object.keys(STATS?.groups || {}).filter(k => k.endsWith(":bearish")));
+  const opt = (val, lab, cur) => `<option value="${esc(val)}" ${String(val) === String(cur) ? "selected" : ""}>${esc(lab)}</option>`;
+  v.innerHTML = `<div style="display:grid;gap:18px">
+    <div class="notice" style="color:var(--ink)">Built for prop-firm challenges and funded accounts. Rule presets are <strong>typical</strong> numbers, not any firm's actual rules: always check your firm's current rulebook. Nothing here is a recommendation to trade.</div>
+    <section class="card" aria-labelledby="acc-h"><h3 id="acc-h">Your account</h3>
+      <form id="accform" class="fgrid" onsubmit="return false">
+        <label>Rules<select id="f-preset">${Object.entries(PRESETS).map(([k,p]) => opt(k, p.label, acc.preset)).join("")}</select></label>
+        <label>Account size<input id="f-size" type="number" min="1000" step="1000" value="${acc.size}"></label>
+        <label>Currency symbol<input id="f-ccy" maxlength="3" value="${esc(acc.ccy)}"></label>
+        <label>Profit target %<input id="f-target" type="number" step="0.5" value="${acc.target}"></label>
+        <label>Daily loss limit %<input id="f-daily" type="number" step="0.5" value="${acc.daily}"></label>
+        <label>Max loss %<input id="f-maxloss" type="number" step="0.5" value="${acc.maxloss}"></label>
+        <label>Max loss type<select id="f-trailing">${opt("false","Static (from start)",acc.trailing)}${opt("true","Trailing (from peak)",acc.trailing)}</select></label>
+        <label>Risk per trade %<input id="f-risk" type="number" step="0.05" min="0.05" value="${acc.risk}"></label>
+        <label>Max trades open at once<input id="f-maxopen" type="number" min="1" step="1" value="${acc.maxopen}"></label>
+        <label>News buffer (minutes each side)<input id="f-news" type="number" min="0" step="1" value="${acc.news}"></label>
+        <label>Instrument<select id="f-inst">${opt("futures","Futures (full size)",acc.inst)}${opt("micro","Micro futures",acc.inst)}${opt("cfd","CFDs / forex lots",acc.inst)}</select></label>
+      </form></section>
+    <div id="f-out" style="display:grid;gap:18px"></div>
+  </div>`;
+  const ids = ["preset","size","ccy","target","daily","maxloss","trailing","risk","maxopen","news","inst"];
+  const read = () => { const a = loadAcc(); ids.forEach(k => { const el = document.getElementById("f-" + k); if (!el) return; a[k] = el.type === "number" ? +el.value : k === "trailing" ? el.value === "true" : el.value; }); return a; };
+  document.getElementById("f-preset").addEventListener("change", e => {
+    const p = PRESETS[e.target.value]; if (p) ["target","daily","maxloss"].forEach(k => document.getElementById("f-" + k).value = p[k]);
+    if (p) document.getElementById("f-trailing").value = String(p.trailing);
+    const a = read(); saveAcc(a); fundedOut(a, groups);
+  });
+  ids.filter(k => k !== "preset").forEach(k => document.getElementById("f-" + k).addEventListener("change", () => { const a = read(); a.preset = "custom"; document.getElementById("f-preset").value = "custom"; saveAcc(a); fundedOut(a, groups); }));
+  fundedOut(acc, groups);
+}
+
+function fundedOut(acc, groups){
+  const box = document.getElementById("f-out"); if (!box) return;
+  const C = acc.ccy || "$", riskAmt = acc.size * acc.risk / 100, dailyAmt = acc.size * acc.daily / 100, maxAmt = acc.size * acc.maxloss / 100;
+  const money = x => C + Math.round(x).toLocaleString("en-GB");
+  const g = STATS?.groups?.[acc.group];
+  const lossesDaily = Math.floor(acc.daily / acc.risk), lossesMax = Math.floor(acc.maxloss / acc.risk);
+  const together = acc.maxopen * acc.risk;
+  const streak = g ? g.losing_streak_median_asset : null;
+  const budget = `<section class="card"><h3>Risk budget</h3><dl class="kv">
+      <div><dt>Risk per trade</dt><dd>${money(riskAmt)} (${acc.risk}%)</dd></div>
+      <div><dt>Losing trades in a row to hit the daily limit</dt><dd>${lossesDaily}</dd></div>
+      <div><dt>Losing trades in a row to hit max loss</dt><dd>${lossesMax}</dd></div>
+      <div><dt>All ${acc.maxopen} open trades stopped on one day</dt><dd style="color:${together >= acc.daily ? "var(--sbear)" : "inherit"}">−${together.toFixed(2)}% ${together >= acc.daily ? "· breaks the daily limit" : ""}</dd></div>
+      ${streak ? `<div><dt>Usual losing run for ${esc(acc.group.replace(":"," "))} setups (tested)</dt><dd style="color:${streak >= lossesMax ? "var(--sbear)" : "inherit"}">${streak} in a row ${streak >= lossesMax ? "· would end the account" : ""}</dd></div>` : ""}
+    </dl><p class="sub" style="margin:0">These setups win only about a quarter of the time and make their money from a few big winners, so long losing runs are normal. Size so the usual losing run fits well inside your max loss.</p></section>`;
+
+  // position sizer for current setups
+  const setups = (SET?.assets || []).filter(s => s.status === "ok" && s.zone && Math.abs(s.score) >= 40).sort((a,b) => Math.abs(b.score) - Math.abs(a.score)).slice(0, 10);
+  const rows = setups.map(s => {
+    const a = (DATA?.assets || []).find(x => x.symbol === s.symbol) || {};
+    const bull = s.direction === "bullish", entry = bull ? s.zone.hi : s.zone.lo, dist = Math.abs(entry - s.signal_break);
+    const vp = valuePerPoint(s.symbol, entry, acc.inst);
+    let size = "—", note = "";
+    if (vp && dist > 0){ const raw = riskAmt / (dist * vp.v); size = acc.inst === "cfd" || /\//.test(s.symbol) ? (Math.floor(raw*100)/100).toFixed(2) : String(Math.floor(raw)); note = vp.name; if (+size === 0) note += " · stop too wide for this risk"; }
+    else note = "no contract spec; size in your platform";
+    const gg = grp(a.asset_class, s.direction);
+    return `<tr class="${tone(s.score)}"><td><div class="sym">${esc(s.symbol)}</div><div class="nm">${esc(a.name || "")}</div></td><td>${pill(s.direction === "bullish" ? "Long" : "Short", s.score)}</td>
+      <td class="r num">${fmtPrice(entry)}</td><td class="r num">${fmtPrice(s.signal_break)}</td><td class="r num">${fmtPrice(dist)}</td>
+      <td class="r num" style="font-weight:600">${size}</td><td class="sub">${esc(note)}</td>
+      <td class="r num ${gg && gg.avg_r > 0.05 ? "up" : gg && gg.avg_r < -0.05 ? "dn" : ""}">${gg ? (gg.avg_r > 0 ? "+" : "") + gg.avg_r.toFixed(2) + "R" : "—"}</td></tr>`;
+  }).join("");
+  const sizer = `<section class="section"><div class="sh"><h2>Position sizes for today's setups</h2><span class="sub">Risking ${money(riskAmt)} from the zone edge to the signal-break level</span></div>
+    <div class="board"><table><thead><tr><th>Asset</th><th>Side</th><th class="r">Entry (limit)</th><th class="r">Stop</th><th class="r">Distance</th><th class="r">Size</th><th>Contract</th><th class="r">Tested edge</th></tr></thead>
+    <tbody>${rows || `<tr><td colspan="8" class="sub">No setups right now.</td></tr>`}</tbody></table></div>
+    <p class="sub" style="margin:0">Futures sizes use exchange contract values (GER40 in €, UK100 in £). CFD and forex lot sizes vary by broker: check the contract size in your platform. Forex lots are 100,000 units; size is in lots. Holding CFDs for weeks also costs overnight swap fees, which the tests don't include.</p></section>`;
+
+  // news lock
+  const news = upcomingNews(48);
+  const now = Date.now(), buf = acc.news * 60e3;
+  const active = news.find(n => n.t && Math.abs(n.t - now) <= buf);
+  const next = news.find(n => n.t && n.t > now);
+  const lock = `<section class="card"><h3>News lock</h3>
+    <div class="banner ${active ? "" : "warn"}" style="border-left-color:${active ? "var(--sbear)" : next && next.t - now < 3600e3 ? "var(--warn)" : "var(--sbull)"}">
+      <strong>${active ? "Inside a news window: " + esc(active.title) : next ? "Next: " + esc(next.title) + " " + fmtCountdown(next.t - now) : "No high-impact events in the next 48 hours"}</strong>
+      <span class="sub">Many firms ban opening or closing trades a few minutes either side of high-impact news on funded accounts. Your buffer: ${acc.news} min.</span></div>
+    <ul class="list" style="margin-top:8px">${news.map(n => `<li><span class="when">${esc(n.date)}${n.time ? " · " + esc(n.time) : ""}${n.t ? " · " + fmtCountdown(n.t - now) : ""}</span><strong>${esc(n.title)}</strong><span class="sub">${esc(n.detail || "")}</span></li>`).join("") || `<li class="sub">Nothing scheduled.</li>`}</ul></section>`;
+
+  // same-bet check
+  const strong = (DATA?.assets || []).filter(a => a.status === "ok" && Math.abs(a.score) >= 40);
+  const pairs = [];
+  for (let i = 0; i < strong.length; i++) for (let j = i+1; j < strong.length; j++){
+    const c = corrOf(strong[i].symbol, strong[j].symbol); if (c == null || Math.abs(c) < 0.7) continue;
+    const same = Math.sign(strong[i].score) * Math.sign(strong[j].score) * Math.sign(c) > 0;
+    pairs.push({a: strong[i].symbol, b: strong[j].symbol, c, same});
+  }
+  pairs.sort((p,q) => Math.abs(q.c) - Math.abs(p.c));
+  const overlap = `<section class="card"><h3>Same bet? (strong signals that move together)</h3>
+    <ul class="list">${pairs.slice(0, 8).map(p => `<li><strong>${esc(p.a)} + ${esc(p.b)}</strong><span class="sub">${p.c.toFixed(2)} correlation over 90 days. ${p.same ? "Taking both signals doubles the same risk: count them as one position." : "The signals point opposite ways, so together they partly cancel out."}</span></li>`).join("") || `<li class="sub">No strongly linked pairs among today's strongest signals.</li>`}</ul></section>`;
+
+  // challenge simulator
+  const simUI = !STATS ? `<section class="card"><h3>Challenge simulator</h3><p class="sub">Appears once the tested setup results load.</p></section>` : `<section class="card"><h3>Challenge simulator</h3>
+    <form class="fgrid" onsubmit="return false">
+      <label>Setups to trade<select id="f-group">${groups.map(k => { const gg = STATS.groups[k]; return `<option value="${k}" ${k === acc.group ? "selected" : ""}>${esc(GROUP_NAME[k.split(":")[0]])} ${k.split(":")[1]} (${gg.avg_r > 0 ? "+" : ""}${gg.avg_r.toFixed(2)}R)</option>`; }).join("")}</select></label>
+      <label>Trades per week<input id="f-tpw" type="number" min="0.5" step="0.5" value="${acc.tpw}"></label>
+      <label style="align-self:end"><button id="f-run" type="button" class="btn">Run 5,000 simulated challenges</button></label>
+    </form>
+    <div id="f-sim" aria-live="polite"></div>
+    <p class="sub" style="margin:0">Each run draws trade results at random from the tested ${STATS ? esc(STATS.period) : ""} history for the chosen setups, using your target, limits and risk. It assumes trades are independent; in reality losses cluster when markets turn, so real results are usually worse. Up to 2 years per run.</p></section>`;
+
+  // tested results
+  const order = ["stock","index","commodity","bond","fx","crypto"];
+  const tr = order.flatMap(c => ["bullish","bearish"].map(d => [c,d,grp(c,d)])).filter(x => x[2]).map(([c,d,gg]) => `<tr class="${gg.avg_r > 0.05 ? "t-sbull" : gg.avg_r < -0.05 ? "t-sbear" : "t-flat"}">
+      <td>${esc(GROUP_NAME[c])} ${d}</td><td class="r num">${gg.trades.toLocaleString("en-GB")}</td><td class="r num">${Math.round(gg.win_rate*100)}%</td>
+      <td class="r num">+${gg.avg_win_r}R</td><td class="r num">${gg.avg_loss_r}R</td><td class="r num" style="font-weight:600;color:var(--tc)">${gg.avg_r > 0 ? "+" : ""}${gg.avg_r.toFixed(2)}R</td>
+      <td class="r num">${gg.since2016_avg_r != null ? (gg.since2016_avg_r > 0 ? "+" : "") + gg.since2016_avg_r.toFixed(2) + "R" : "—"}</td>
+      <td class="r num">${gg.median_days_held}</td><td class="r num">${gg.losing_streak_median_asset} / ${gg.losing_streak_worst_asset}</td></tr>`).join("");
+  const tested = STATS ? `<section class="section"><div class="sh"><h2>How the setups have traded (tested)</h2><span class="sub">${esc(STATS.period)} · ${esc(STATS.rules)}</span></div>
+    <div class="board"><table><thead><tr><th>Setups</th><th class="r">Trades</th><th class="r">Won</th><th class="r">Avg win</th><th class="r">Avg loss</th><th class="r">Per trade</th><th class="r">Since 2016</th><th class="r">Days held</th><th class="r">Losing run (usual / worst)</th></tr></thead><tbody>${tr}</tbody></table></div>
+    ${holdTable()}
+    <p class="sub" style="margin:0">Bullish setups made money in every market except forex; bearish setups lost money almost everywhere. Crypto's numbers come only from coins that survived, so they're flattered. Taking profit at the next resistance instead had no edge (about 0R per trade).</p></section>` : "";
+
+  // live scorecard
+  let sc = "";
+  if (SCORE){
+    const s = SCORE.summary || {}, all = s.all || {};
+    const recent = (SCORE.entries || []).slice().reverse().slice(0, 15);
+    sc = `<section class="section"><div class="sh"><h2>Live scorecard</h2><span class="sub">Every setup since ${esc(SCORE.started || "")}, followed with the same rules as the test</span></div>
+      <div class="mood">
+        <div class="tile"><div class="k">Closed trades</div><div class="v">${all.closed || 0}</div></div>
+        <div class="tile ${all.avg_r > 0 ? "t-sbull" : all.avg_r < 0 ? "t-sbear" : "t-flat"}"><div class="k">Average per trade</div><div class="v">${all.closed ? (all.avg_r > 0 ? "+" : "") + all.avg_r.toFixed(2) + "R" : "—"}</div></div>
+        <div class="tile"><div class="k">Won</div><div class="v">${all.closed ? Math.round(all.win_rate*100) + "%" : "—"}</div></div>
+        <div class="tile"><div class="k">Open / waiting for fill</div><div class="v">${s.open || 0} / ${s.pending || 0}</div></div>
+      </div>
+      <div class="board"><table><thead><tr><th>Asset</th><th>Side</th><th>Signal</th><th>Status</th><th class="r">Entry</th><th class="r">Stop</th><th class="r">Exit</th><th class="r">Result</th></tr></thead><tbody>
+      ${recent.map(e => `<tr class="${e.r > 0 ? "t-sbull" : e.r < 0 ? "t-sbear" : "t-flat"}"><td class="sym">${esc(e.symbol)}</td><td>${e.direction === "bullish" ? "Long" : "Short"}</td><td class="mono">${esc(e.signal_date)}</td>
+        <td>${esc(e.status === "pending" ? "waiting for fill" : e.status)}${e.exit_reason ? ` <span class="sub">(${esc(e.exit_reason)})</span>` : ""}</td>
+        <td class="r num">${e.entry != null ? fmtPrice(e.entry) : "—"}</td><td class="r num">${fmtPrice(e.signal_break)}</td><td class="r num">${e.exit != null ? fmtPrice(e.exit) : "—"}</td>
+        <td class="r num" style="font-weight:600">${e.r != null ? (e.r > 0 ? "+" : "") + e.r.toFixed(2) + "R" + (e.status === "open" ? " (so far)" : "") : "—"}</td></tr>`).join("") || `<tr><td colspan="8" class="sub">The first setups are recorded at the 21:40 UK run.</td></tr>`}
+      </tbody></table></div>
+      <p class="sub" style="margin:0">This is the real test. If live results drift well below the tested numbers above, the edge may have faded.</p></section>`;
+  }
+  box.innerHTML = `<div class="cards">${lock}${budget}</div>${sizer}<div class="cards">${simUI}${overlap}</div>${tested}${intradayTestedHTML()}${sc}`;
+  const run = () => {
+    const a = loadAcc(); a.group = document.getElementById("f-group").value; a.tpw = +document.getElementById("f-tpw").value || 3; saveAcc(a);
+    const r = simulateChallenge(a, 5000), out = document.getElementById("f-sim");
+    const gg = STATS.groups[a.group], half = gg && gg.avg_r > 0 ? simulateChallenge(a, 3000, gg.avg_r / 2) : null;
+    if (!r) { out.innerHTML = `<p class="sub">No test data for that choice.</p>`; return; }
+    const bar = (p, col) => `<span style="display:inline-block;height:10px;width:${Math.max(1, p*100)}%;background:${col};border-radius:2px"></span>`;
+    out.innerHTML = `<dl class="kv" style="margin-top:8px">
+      <div><dt>Passed</dt><dd style="color:var(--sbull);font-weight:600">${(r.pass*100).toFixed(0)}%</dd></div>
+      <div><dt>Hit max loss</dt><dd style="color:var(--sbear)">${(r.failMax*100).toFixed(0)}%</dd></div>
+      <div><dt>Hit daily limit</dt><dd style="color:var(--sbear)">${(r.failDaily*100).toFixed(0)}%</dd></div>
+      <div><dt>Still going after 2 years</dt><dd>${(r.open*100).toFixed(0)}%</dd></div>
+      <div><dt>Typical time to pass</dt><dd>${r.medianWeeks != null ? Math.round(r.medianWeeks) + " weeks" : "—"}</dd></div>
+      ${half ? `<div><dt>Passed if the edge were only half as big</dt><dd>${(half.pass*100).toFixed(0)}%</dd></div>` : ""}</dl>
+      <div style="display:flex;height:10px;margin-top:6px;border-radius:3px;overflow:hidden;background:var(--flat-bg)">${bar(r.pass,"var(--sbull)")}${bar(r.failMax,"var(--sbear)")}${bar(r.failDaily,"var(--lbear)")}</div>`;
+  };
+  if (!STATS) return;
+  document.getElementById("f-run").addEventListener("click", run);
+  document.getElementById("f-group").addEventListener("change", () => { const a = loadAcc(); a.group = document.getElementById("f-group").value; saveAcc(a); fundedOut(a, groups); });
+  run();
+  clearInterval(TICK); TICK = setInterval(() => { if ((location.hash || "").slice(1) === "funded") { const a = loadAcc(); const sim = document.getElementById("f-sim")?.innerHTML; fundedOut(a, groups); } else clearInterval(TICK); }, 60000);
+}
+
+/* ---------- news sections ---------- */
+function src(u){ return u ? ` <a href="${esc(u)}" target="_blank" rel="noopener">source</a>` : ""; }
+function li(i){ return `<li class="${i.hi ? "hi" : ""}"><span class="when">${esc(i.date)}${i.time ? " · " + esc(i.time) : ""} · ${i.past ? "posted" : whenWord(i.date)}</span><strong>${esc(i.title)}</strong><span class="sub">${esc(i.detail || "")}${src(i.source)}</span></li>`; }
+const byDate = (a,b) => String(a.date).localeCompare(String(b.date));
+function eventsHTML(stocksOnly, fxOnly, title){
+  const items = newsItems();
+  let ev = items.filter(i => i.kind === "Macro").sort(byDate), er = items.filter(i => i.kind === "Earnings").sort(byDate);
+  if (fxOnly) er = [];
+  const empty = `<li class="sub">Nothing in the next 14 days.</li>`;
+  return `<div class="section"><div class="sh"><h2>${title || (stocksOnly ? "Events and earnings" : fxOnly ? "Events that move currencies" : "Scheduled events")}</h2>${CAT?.notes ? "" : ""}</div><div class="cards">
+    <div class="card"><h3>Central banks &amp; data</h3><ul class="list">${ev.length ? ev.map(li).join("") : empty}</ul>
+      <div class="research">Big scheduled releases (rate decisions, US jobs, inflation) bring sharp, two-way moves. Chart signals say little about the first minutes after the release.</div></div>
+    ${fxOnly ? "" : `<div class="card"><h3>Earnings on your watchlist</h3><ul class="list">${er.length ? er.map(li).join("") : empty}</ul>
+      <div class="research">Studies find large US stocks now price earnings surprises in on the day, and the old after-earnings drift has largely faded since 2006. Expect a gap, not a slow move.</div></div>`}
+  </div>${!stocksOnly && !fxOnly && CAT?.notes ? `<p class="sub" style="margin:0;max-width:80ch">${esc(CAT.notes)}</p>` : ""}</div>`;
+}
+function commodityEventsHTML(){
+  const items = newsItems();
+  const ce = items.filter(i => i.kind === "Commodity").sort(byDate);
+  const ev = items.filter(i => i.kind === "Macro" && /\bUS\b|Fed|FOMC/i.test(i.title + " " + (i.detail || ""))).sort(byDate);
+  const empty = `<li class="sub">Nothing in the next 14 days.</li>`;
+  return `<div class="section"><div class="sh"><h2>Events that move commodities</h2></div><div class="cards">
+    <div class="card"><h3>Oil, gas &amp; crop reports</h3><ul class="list">${ce.length ? ce.map(li).join("") : empty}</ul>
+      <div class="research">Weekly US oil and gas inventory reports, OPEC+ meetings and the monthly USDA crop report (WASDE) regularly move prices several percent in minutes. Levels often get overshot around them.</div></div>
+    <div class="card"><h3>US rates &amp; data</h3><ul class="list">${ev.length ? ev.map(li).join("") : empty}</ul>
+      <div class="research">Commodities are priced in dollars. Fed decisions, US inflation and jobs data move the dollar and real interest rates, which matter most for gold and silver.</div></div>
+  </div></div>`;
+}
+function catalystsHTML(){
+  if (!CAT) return `<div class="notice">Crypto catalysts (token unlocks, launches, big-account posts) appear here after the next scheduled run.</div>`;
+  const items = newsItems();
+  const u = items.filter(i => i.kind === "Unlock").sort((a,b) => (b.hi - a.hi) || byDate(a,b));
+  const l = items.filter(i => i.kind === "Launch"), p = items.filter(i => i.kind === "Post").sort((a,b) => (b.hi - a.hi) || byDate(b,a));
+  const empty = `<li class="sub">Nothing notable found this run.</li>`;
+  return `<div class="section"><div class="sh"><h2>Crypto catalysts</h2><span class="sub">Gathered from crypto news and unlock trackers${CAT.generated_at ? ", " + esc(ago(CAT.generated_at)) : ""}. Orange edge = priority.</span></div>
+  <div class="cards">
+    <div class="card"><h3>Token unlocks <span class="pill t-lbear">supply pressure</span></h3><ul class="list">${u.length ? u.map(li).join("") : empty}</ul>
+      <div class="research">A study of 16,000+ unlocks found about 90% put downward pressure on price, often starting around 30 days before the date. Team and investor unlocks hit hardest. Unlocks under about 0.5% of supply have minimal impact.</div></div>
+    <div class="card"><h3>Posts from big accounts</h3><ul class="list">${p.length ? p.map(li).join("") : empty}</ul>
+      <div class="research">X isn't read directly, so posts appear only after news sites report them. A study of 36,000 influencer tweets found touted coins rose about 1.8% on day one, then fell an average of 19% after three months.</div></div>
+    <div class="card"><h3>Launches &amp; listings <span class="pill t-flat">high risk</span></h3><ul class="list">${l.length ? l.map(li).join("") : empty}</ul>
+      <div class="research">New tokens start with a small tradeable float and big locked supply. Many hyped launches sell off after listing as airdrop farmers exit.</div></div>
+  </div></div>`;
+}
+
+function methodHTML(){
+  return `<div class="prose">
+  <h2>How the score works</h2>
+  <p>Each asset gets a score from −100 (strongly bearish) to +100 (strongly bullish), from daily closing prices. Only signals with published evidence behind them count, and each one is measured against the asset's own volatility, so a 2% move in a calm currency counts for more than a 2% move in Bitcoin.</p>
+  <p><strong>Colours:</strong> ${pill("Bullish",50)} +40 or more, ${pill("Leaning bullish",20)} +15 to +40, ${pill("Neutral",0)} −15 to +15, ${pill("Leaning bearish",-20)} −15 to −40, ${pill("Bearish",-50)} −40 or lower. Boards list the strongest readings first, whichever direction. The signals work on a timescale of weeks to months.</p>
+  <div class="board"><table class="mtable"><thead><tr><th>Signal</th><th>Used for</th><th>Weight</th><th>Evidence</th></tr></thead><tbody>
+    <tr><td>12-month trend, skipping the last month</td><td>Stocks, forex, commodities</td><td class="num">30–35%</td><td>Found in every one of 58 futures markets tested across stock indices, currencies, commodities and bonds over 25+ years (Moskowitz, Ooi &amp; Pedersen, 2012).</td></tr>
+    <tr><td>Price vs 200-day average</td><td>All</td><td class="num">15–25%</td><td>A 10-month (≈200-day) average filter roughly halved volatility and sharply cut drawdowns across asset classes (Faber, 2007).</td></tr>
+    <tr><td>3-month momentum</td><td>Stocks, forex, commodities</td><td class="num">20–25%</td><td>Shorter-horizon version of the same trend effect.</td></tr>
+    <tr><td>50-day vs 200-day average</td><td>Stocks, forex, commodities</td><td class="num">15%</td><td>Moving-average rules are the best-supported chart rules in a review of 95 modern studies (Park &amp; Irwin, 2007), with caveats about data mining.</td></tr>
+    <tr><td>Short-term stretch (RSI-2)</td><td>Stocks</td><td class="num">10%</td><td>Short-term reversal: stocks that drop hard over a few days tend to bounce (Blitz et al., 2013). Kept small because it fights the trend signals.</td></tr>
+    <tr><td>1-week and 4-week momentum</td><td>Crypto</td><td class="num">55%</td><td>Crypto shows strong time-series momentum at daily and weekly horizons (Liu &amp; Tsyvinski, 2021).</td></tr>
+    <tr><td>Price vs 50-day and 200-day average</td><td>Crypto</td><td class="num">35%</td><td>Trend filter, as above.</td></tr>
+    <tr><td>Volume / attention surge</td><td>Crypto</td><td class="num">10%</td><td>Investor attention predicts crypto returns over one to several weeks (Liu &amp; Tsyvinski).</td></tr>
+    <tr><td>US stocks' trend (S&amp;P 500 vs 200-day) and Bitcoin's trend</td><td>Crypto</td><td class="num">15% each</td><td>Added November 2026 after Signal Desk's own tests (below). The chart signals above share the remaining 70%.</td></tr>
+  </tbody></table></div>
+  <h2>What we tested (November 2026)</h2>
+  <p>Every idea was written down before testing, then run on daily prices going back as far as 1970 (stocks), 1996 (forex) and 2014 (crypto): the 15 watchlist assets plus 40 others never used to choose anything. Rules: better in the pre-2021 data <em>and</em> since 2021, better on the unseen assets, after trading costs, and unlikely to be luck (block bootstrap). Crypto got a looser luck test, as requested.</p>
+  <div class="board"><table class="mtable"><thead><tr><th>Idea</th><th>Markets</th><th>Result</th></tr></thead><tbody>
+    <tr><td>Intraday rules on hourly data (pullback limits at 0–0.5 ATR, opening-range breakouts, last-half-hour momentum)</td><td>All</td><td><span class="pill t-sbull">Crypto only</span> A London range breakout on crypto held up in the second year and on unseen coins. Nothing held up for forex, commodities or stocks. Index results looked good only where the hourly open price was stale. Deeper entries did worse everywhere.</td></tr>
+    <tr><td>Setup exits: take profit at the next level vs. hold until the score fades</td><td>All</td><td><span class="pill t-sbull">Changed</span> Fixed targets made about 0R per trade. Holding until the score falls back inside ±15 made +0.2 to +0.3R per bullish trade in stocks, indices, bonds and commodities (2005–2026), with about a quarter of trades winning. Bearish setups lost money. Full table in the Funded account tab.</td></tr>
+    <tr><td>US stocks' trend + Bitcoin's trend</td><td>Crypto</td><td><span class="pill t-sbull">Added</span> Risk-adjusted return (Sharpe) 1.31 → 1.45, better before and after 2021 and on unseen coins.</td></tr>
+    <tr><td>Fear &amp; Greed index (contrarian and trend), Wikipedia attention, news tone, news spikes, big-account news (Musk, Saylor, CZ, Trump, Vitalik)</td><td>Crypto</td><td><span class="pill t-lbear">No help</span> None improved the score. A 60% news / 40% chart score cut Sharpe from 0.96 to 0.73; news alone scored −0.11. Sentiment mostly echoes recent price moves: following it behaved like 1-week momentum, and what was left over lost money. News stays on the page as context.</td></tr>
+    <tr><td>The same trend score on commodity futures (gold, silver, oil, gas, copper, grains + 12 unseen futures)</td><td>Commodities</td><td><span class="pill t-flat">Shown, low conviction</span> On commodity funds that include roll costs, it beat holding before 2016 (Sharpe 0.80 vs −0.15) but has had little edge since (0.10 vs 0.66). Gold has been the most consistent (about 0.55–0.6 in both periods).</td></tr>
+    <tr><td>6-month and 1-month trend, 52-week high, 55-day breakouts, VIX filter, ADX filter, MACD, RSI-14, on-balance volume, removing existing parts</td><td>Stocks, forex</td><td><span class="pill t-flat">No change</span> Nothing improved results by a meaningful amount. RSI-14 passed the luck test but added only +0.008 Sharpe, too small to matter.</td></tr>
+  </tbody></table></div>
+  <p><strong>What the tests say about the score itself.</strong> Stocks: bearish calls were right only 42% of the time, because stocks rise more often than not even in rough patches, and many of the best days come during them; a bearish stock score means "step aside", not "will fall". Forex: calls have been right about 50% of the time since 2021, so treat forex scores as no edge. Commodities: bearish calls were right 46% of the time; like stocks, read them as "step aside". Crypto: the score works best as "buy or stay out"; shorting on bearish calls lost money.</p>
+  <h2>How the levels are found</h2>
+  <p><strong>Support and resistance</strong> are swing lows and highs from the last year: a day whose low (or high) is the extreme of the five trading days either side. Swings within about half a day's typical range of each other merge into one level, and the number of swings merged is shown as touches. More touches, and more recent ones, make a level more widely watched.</p>
+  <p><strong>Zones</strong> only appear when the score leans one way. In an uptrend the pullback zone sits on the nearest support within three typical daily ranges (ATR); in a downtrend the bounce zone sits on the nearest resistance. The <strong>signal-break level</strong> is three-quarters of a daily range beyond the zone: a daily close past it means the level failed. Reward:risk compares the distance to the next level with the distance to the break, measured from the middle of the zone.</p>
+  <h2>What counts as priority news</h2>
+  <p>A central-bank decision, US jobs report, inflation print or watchlist earnings within 3 days; a token unlock within 7 days worth $50M+, 3%+ of supply, or going to the team or investors; and any big-account post that names BTC, ETH, SOL or XRP.</p>
+  <h2>What's deliberately left out</h2>
+  <p><strong>Candlestick patterns:</strong> bootstrap tests on Dow stocks found none of 28 patterns predicted price (Marshall, Young &amp; Rose, 2006).</p>
+  <p><strong>Forex chart rules on their own:</strong> simple rules on currencies made money in the 1970s and 80s, then the profits faded by the early 1990s (Neely, Weller &amp; Ulrich). Forex scores are always marked lower confidence.</p>
+  <p><strong>Tips from influencers:</strong> coins touted on social media gave back more than half of their first-day pop within five days on average (Merkley, Pacelli et al., 2023).</p>
+  <h2>The honest limits</h2>
+  <p>Every detail page shows the score's own track record on that asset. Expect hit rates in the low-to-mid 50s at best. Trading costs, spreads and taxes eat into all of it. This is a research tool, not financial advice, and it can be wrong for long stretches.</p>
+  </div>`;
+}
+
+window.addEventListener("hashchange", route);
+let rt; window.addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(renderDetail, 150); });
+load();
+})();
+</script>
+</body>
+</html>
+
+</body></html>
