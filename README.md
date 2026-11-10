@@ -26,6 +26,11 @@ Integrity checks:
 - **Delayed entries:** delaying entries degraded results as expected.
 - **Look-ahead test:** on pure random walks, the engine's own track-record check has a hit rate of about 50% (tested in `test_engine.py`).
 
+**Reproducing the study:** all the code, the pre-registrations and the raw results are in [`research/`](research/README.md).
+- The rules were written down before any results: [`PREREG.md`](research/PREREG.md) for the swing setups and [`PREREG_TF.md`](research/PREREG_TF.md) for the trend portfolio.
+- The holdout figures above come from [`research/results/tf_holdout.json`](research/results/tf_holdout.json) and [`holdout_results.json`](research/results/holdout_results.json).
+- The always-long comparison, S&P 500 correlation, delay test and random-signal check are printed by `tf_checks.py`.
+
 **Known caveat:** free futures data is not adjusted for contract rolls, so prices jump each time a futures contract rolls over. This can make short trades look worse than they are.
 
 ## How it works
@@ -62,7 +67,7 @@ Serve `web/` with any static file server (for example `python3 -m http.server -d
 
 ## Limitations
 
-- **The research simulation scripts aren't here yet.** Docstrings refer to scripts under `research/`, which were run in a separate working session and haven't been added to this repo. The figures above come from that study.
+- **The holdout is short.** 2023–2026 is less than four years, and it was a bull market. The unseen stocks and coins are today's survivors, and there are no financing or swap costs.
 - **Data:** Yahoo Finance prices are free, but they have gaps and bad ticks, and futures are not roll-adjusted.
 - **Not investment advice.** It's a personal research project.
 
