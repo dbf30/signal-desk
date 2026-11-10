@@ -1,5 +1,9 @@
 # Signal Desk
 
+[![tests](https://github.com/dbf30/signal-desk/actions/workflows/tests.yml/badge.svg)](https://github.com/dbf30/signal-desk/actions/workflows/tests.yml) [![licence: MIT](https://img.shields.io/badge/licence-MIT-blue.svg)](LICENSE)
+
+**Live demo:** [dbf30.github.io/signal-desk](https://dbf30.github.io/signal-desk/), a snapshot from 10 November 2026.
+
 Signal Desk is a daily trend-scoring engine and dashboard for 33 markets across stocks, stock indices, FX, commodities, US Treasury futures and crypto. Each market gets a score from −100 (bearish) to +100 (bullish), built only from signals with published empirical support. Scheduled runs refresh the score from Yahoo Finance daily prices, alongside a catalyst feed of central-bank meetings, data releases, earnings and crypto token unlocks.
 
 The project's main value is the research behind it. It tested whether the scores actually make money, and reported the results honestly.
@@ -63,7 +67,7 @@ python3 levels.py --data ../web/data.json --out ../web/setups.json
 for t in test_*.py; do python3 "$t"; done             # 5 test files
 ```
 
-Serve `web/` with any static file server (for example `python3 -m http.server -d web`) to view the dashboard.
+The dashboard is deployed to GitHub Pages from `web/`. To view it locally, serve `web/` with any static file server (for example `python3 -m http.server -d web`).
 
 ## Limitations
 
