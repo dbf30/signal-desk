@@ -126,7 +126,7 @@ def analyse_levels(row: dict, df: pd.DataFrame) -> dict:
     dist = 0.0 if in_zone else round(min(abs(price - lo), abs(price - hi)) / atr, 2)
     out.update({
         "zone": {"lo": _r(lo), "hi": _r(hi), "basis": basis, "in_zone": bool(in_zone), "dist_atr": dist,
-                 "kind": "pullback" if bull else "bounce"},
+                 "kind": "pullback" if bull else "bounce", "anchor_touches": int(anchor["touches"]) if anchor else 0},
         "signal_break": _r(brk), "target": target, "reward_risk": rr,
         "trend_flip": _r(s200) if np.isfinite(s200) else None,
     })
