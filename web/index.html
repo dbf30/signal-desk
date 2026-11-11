@@ -185,6 +185,53 @@ tbody tr.sel{background:var(--tb)}
 .section > .sh{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:6px 14px}
 @media (prefers-reduced-motion:no-preference){.detail{animation:fade .18s ease-out}@keyframes fade{from{opacity:.4}to{opacity:1}}}
 @media (max-width:520px){.wrap{padding:14px 16px 40px}.rs{grid-template-columns:1fr 90px 40px}.meter{width:64px}}
+
+/* ---- v2: regime, signal board, news, performance ---- */
+.regime{background:var(--panel);border:1px solid var(--line);border-left:5px solid var(--rc);border-radius:8px;padding:14px 16px;display:grid;gap:10px}
+.rhead{display:flex;flex-wrap:wrap;gap:12px 24px;justify-content:space-between;align-items:flex-start}
+.regime .k{font-family:var(--display);font-weight:600;font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.regime .rl{font-family:var(--display);font-size:26px;font-weight:700;color:var(--rc);line-height:1.15}
+.xas{display:flex;flex-wrap:wrap;gap:6px}
+.xa{display:inline-flex;gap:8px;align-items:baseline;padding:3px 9px;border-radius:6px;background:var(--tb);font-size:12.5px}
+.xa b{color:var(--tc)}
+.rpol{display:grid;gap:4px;font-size:13.5px;border-top:1px dashed var(--line);padding-top:8px}
+.brief{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px 16px;display:grid;gap:10px}
+.brief .sh{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:6px 14px}
+.counts{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px}
+.cnt{display:grid;gap:0;padding:8px 10px;border-radius:6px;border:1px solid var(--line);border-top:3px solid var(--sc);text-decoration:none;color:var(--ink)}
+.cnt b{font-size:22px;font-weight:600}.cnt span{font-size:12.5px;color:var(--muted)}
+.st-live{--sc:var(--sbull)} .st-near{--sc:var(--hot)} .st-watch{--sc:var(--accent)} .st-dead{--sc:var(--sbear)} .st-old{--sc:var(--flat)}
+.state{display:inline-block;padding:2px 9px;border-radius:4px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;border:1px solid var(--sc);color:var(--sc);white-space:nowrap}
+.state.st-near{background:var(--hot-bg)}
+.grade{display:inline-grid;place-items:center;min-width:44px;height:44px;padding:0 6px;border-radius:8px;font-family:var(--display);font-weight:700;font-size:19px;background:var(--tc);color:var(--panel);flex:none}
+.grade.t-lbull,.grade.t-flat{background:var(--tb);color:var(--tc);border:1px solid var(--tc)}
+.grade.g-none{background:none;border:1px dashed var(--line);color:var(--muted)}
+.grade.sm{min-width:30px;height:24px;font-size:13px;border-radius:5px}
+.sigs{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,360px),1fr));gap:12px}
+.sig{background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--sc);border-radius:8px;padding:14px 16px;display:grid;gap:10px;align-content:start}
+.sighead{display:flex;gap:12px;align-items:center}
+.sigmeta{margin-left:auto;display:flex;flex-direction:column;gap:5px;align-items:flex-end}
+.sigpx{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline}
+.sigpx .px{font-size:18px;font-weight:600}
+.sig details summary{cursor:pointer;font-family:var(--display);font-weight:600;font-size:14px;color:var(--accent)}
+.sigbody{display:grid;gap:10px;margin-top:10px}
+.sl h4{margin:0 0 3px;font-family:var(--display);font-size:12.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.sl.ok h4{color:var(--sbull)} .sl.bad h4{color:var(--sbear)} .sl.warn h4{color:var(--warn)}
+.gps{display:grid;gap:4px}
+.gp{display:grid;grid-template-columns:1fr auto;gap:10px;font-size:13px;border-bottom:1px dashed var(--line);padding-bottom:4px}
+.filters{display:flex;flex-wrap:wrap;gap:6px}
+.fbtn{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:5px 12px;font-size:13px;font-weight:600;cursor:pointer;color:var(--muted)}
+.fbtn.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.gradekey{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.gradekey .sub{flex:1 1 320px;max-width:95ch}
+.nevs{display:grid;gap:10px}
+.nev{background:var(--panel);border:1px solid var(--line);border-left:5px solid var(--tc);border-radius:8px;padding:12px 16px;display:grid;gap:7px}
+.nhead{display:flex;gap:14px;justify-content:space-between;align-items:flex-start}
+.qual{font-family:var(--mono);white-space:nowrap;color:var(--muted);font-size:12px}
+.qual b{font-size:20px;color:var(--ink)}
+.srcs{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px}
+.qa{display:grid;gap:10px}
+.qa div{display:grid;gap:2px;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px 14px;font-size:14px}
 </style>
 </head>
 <body>
@@ -192,7 +239,7 @@ tbody tr.sel{background:var(--tb)}
 // On GitHub Pages this is a static demo: show the snapshot notice.
 if (location.hostname.endsWith("github.io")) document.addEventListener("DOMContentLoaded", () => {
   const n = document.createElement("div");
-  n.textContent = "Demo snapshot from 10 November 2026. The live app refreshes on a schedule; this copy does not.";
+  n.textContent = "Demo snapshot from 11 November 2026. The live app refreshes on a schedule; this copy does not.";
   n.style.cssText = "background:#fff4d6;color:#5c4400;padding:8px 16px;font:13px/1.4 system-ui,sans-serif;text-align:center;border-bottom:1px solid #e8d49a";
   document.body.prepend(n);
 });
@@ -201,7 +248,7 @@ if (location.hostname.endsWith("github.io")) document.addEventListener("DOMConte
   <header class="top">
     <div style="display:grid;gap:2px">
       <h1>Signal Desk</h1>
-      <div class="sub">Daily signals for stocks, indices, forex, commodities, bonds and crypto, with funded-account tools. Research-weighted, not financial advice.</div>
+      <div class="sub">Daily signals, graded trade plans, news and a live scorecard for stocks, indices, forex, commodities, bonds and crypto. A research tool, not financial advice. It places no trades.</div>
     </div>
     <div style="display:flex;flex-wrap:wrap;gap:8px" id="status"></div>
   </header>
@@ -211,6 +258,9 @@ if (location.hostname.endsWith("github.io")) document.addEventListener("DOMConte
 
   <nav class="tabs" aria-label="Sections">
     <a href="#overview" data-tab="overview">Overview</a>
+    <a href="#signals" data-tab="signals">Signals</a>
+    <a href="#news" data-tab="news">News</a>
+    <a href="#performance" data-tab="performance">Performance</a>
     <a href="#stocks" data-tab="stocks">Stocks</a>
     <a href="#indices" data-tab="indices">Indices</a>
     <a href="#forex" data-tab="forex">Forex</a>
@@ -232,6 +282,7 @@ const CLASS_NAME = {stock:"Stocks", index:"Indices", fx:"Forex", commodity:"Comm
 const WATCH = ["BTC","ETH","SOL","XRP"];
 const STOCKS = ["SPY","QQQ","AAPL","MSFT","NVDA","AMZN","TSLA"];
 let SET = null, STATS = null, SCORE = null, TICK = null, INTRA = null, ISTATS = null;
+let REG = null, SIG = null, NEWS = null, PERF = null, GMODEL = null;
 let DATA = null, CAT = null, SELECTED = null, SORT = {key:"strength", dir:-1}, DATA_ERR = null;
 
 const $ = (s, el=document) => el.querySelector(s);
@@ -283,6 +334,8 @@ async function load(){
   try { const r = await fetch("scorecard.json", {cache:"no-store"}); if (r.ok) SCORE = await r.json(); } catch(e){ SCORE = null; }
   try { const r = await fetch("intraday.json", {cache:"no-store"}); if (r.ok) INTRA = await r.json(); } catch(e){ INTRA = null; }
   try { const r = await fetch("intraday_stats.json", {cache:"no-store"}); if (r.ok) ISTATS = await r.json(); } catch(e){ ISTATS = null; }
+  const opt = async f => { try { const r = await fetch(f, {cache:"no-store"}); return r.ok ? await r.json() : null; } catch(e){ return null; } };
+  [REG, SIG, NEWS, PERF, GMODEL] = await Promise.all(["regime.json", "signals.json", "news.json", "performance.json", "grade_model.json"].map(opt));
   renderTop(); route();
 }
 
@@ -311,6 +364,7 @@ function renderTop(){
   }
   if (CAT?.generated_at) chips.push(`<span class="chip ok"><span class="dot"></span>News ${esc(ago(CAT.generated_at))}</span>`);
   chips.push(`<span class="chip"><span class="dot" style="background:var(--accent)"></span>Updates every 4 hours</span>`);
+  if (REG?.label) chips.push(`<a href="#signals" class="chip ${REG.overlay ? "warn" : "ok"}" style="text-decoration:none;color:inherit"><span class="dot"></span>Regime: ${esc(REG.label)}</a>`);
   st.innerHTML = chips.join("");
   bn.innerHTML = banner;
   renderPriority();
@@ -368,11 +422,14 @@ function renderPriority(){
 /* ---------- routing ---------- */
 function route(){
   const tab = (location.hash || "#overview").slice(1);
-  const t = ["overview","stocks","indices","forex","commodities","bonds","crypto","funded","method"].includes(tab) ? tab : "overview";
+  const t = ["overview","signals","news","performance","stocks","indices","forex","commodities","bonds","crypto","funded","method"].includes(tab) ? tab : "overview";
   document.querySelectorAll("nav.tabs a").forEach(a => { if (a.dataset.tab !== t) a.removeAttribute("aria-current"); else a.setAttribute("aria-current","page"); });
   const v = $("#view");
   if (t === "method") { v.innerHTML = methodHTML(); return; }
   if (t === "funded") { renderFunded(v); return; }
+  if (t === "signals") { signalsView(v); return; }
+  if (t === "news") { newsView(v); return; }
+  if (t === "performance") { perfView(v); return; }
   const cls = CLASS_OF[t];
   const news = t === "overview" ? eventsHTML() : t === "stocks" ? eventsHTML(true) : t === "crypto" ? catalystsHTML() : t === "forex" ? eventsHTML(false, true) : t === "commodities" ? commodityEventsHTML() : t === "indices" ? eventsHTML(true, false, "Events that move indices") : t === "bonds" ? eventsHTML(false, true, "Events that move bonds") : "";
   if (!DATA) {
@@ -382,7 +439,7 @@ function route(){
   const list = assets(cls);
   if (!SELECTED || !list.some(a => a.symbol === SELECTED)) SELECTED = [...list].filter(a=>a.status==="ok").sort((a,b) => Math.abs(b.score) - Math.abs(a.score))[0]?.symbol;
   v.innerHTML = `<div style="display:grid;gap:18px">
-    ${t === "overview" ? moodHTML() + alertsHTML() : ""}
+    ${t === "overview" ? regimeHTML() + briefHTML() + moodHTML() + alertsHTML() : ""}
     ${leadersHTML(cls)}
     ${setupsHTML(cls)}
     ${intradayHTML(cls)}
@@ -651,7 +708,7 @@ function setupCard(s){
   if (a.asset_class === "bond") weigh.push("Treasury futures move most on Fed decisions, US inflation and jobs data.");
   for (const o of overlapsFor(s.symbol)) weigh.push(`Moves with <strong>${esc(o.sym)}</strong> (${o.c.toFixed(2)} correlation over 90 days). Holding both is close to one bigger position.`);
   return `<article class="setup ${tone(s.score)}">
-    <div class="shead"><span class="sym" style="font-size:20px">${esc(s.symbol)}</span><span class="nm">${esc(a.name || "")}</span>${pill((s.label || "") + " " + fmtScore(s.score), s.score)}<span class="px">${fmtPrice(s.price)}</span><span class="sub">${esc(s.confidence || "")} confidence</span></div>
+    <div class="shead"><span class="sym" style="font-size:20px">${esc(s.symbol)}</span><span class="nm">${esc(a.name || "")}</span>${pill((s.label || "") + " " + fmtScore(s.score), s.score)}<span class="px">${fmtPrice(s.price)}</span><span class="sub">${esc(s.confidence || "")} confidence</span>${sigFor(s.symbol) ? gradeBadge(sigFor(s.symbol).grade, true) + stateChip(sigFor(s.symbol).state) : ""}</div>
     <div class="sbody">
       <div class="ladder">${ladderSVG(s)}</div>
       <dl class="kv">
@@ -1089,8 +1146,264 @@ function catalystsHTML(){
   </div></div>`;
 }
 
+/* ================= v2 (11 Nov 2026): regime, signal lifecycle, news intelligence, performance ================= */
+const fR = v => v == null ? "—" : (v > 0 ? "+" : "") + Number(v).toFixed(2) + "R";
+const safeUrl = u => /^https?:\/\//i.test(String(u || "")) ? String(u) : "#";
+const pct0 = v => v == null ? "—" : Math.round(v * 100) + "%";
+const GRADE_TONE = {"A+":"t-sbull", "A":"t-sbull", "B":"t-lbull", "C":"t-flat", "Avoid":"t-sbear"};
+const STATE_INFO = {
+  "ENTRY TRIGGERED": {cls:"st-live", label:"Entry triggered", help:"The order filled. The trade is open and managed by the tested exit rule."},
+  "APPROACHING ENTRY": {cls:"st-near", label:"Approaching entry", help:"The order is live and price is within one daily range of it. Not filled yet."},
+  "WATCHING": {cls:"st-watch", label:"Watching", help:"A setup is forming, or its order is resting further than one daily range from price."},
+  "INVALIDATED": {cls:"st-dead", label:"Invalidated", help:"The stop was hit. The idea behind the trade failed."},
+  "EXPIRED": {cls:"st-old", label:"Expired", help:"The order was never filled, or the trade ended by the exit rule or at the end of its session."}
+};
+let SIGF = {strategy:"all", hideAvoid:false}, NEWSF = "all";
+function gradeBadge(g, small){
+  if (!g) return `<span class="grade g-none${small ? " sm" : ""}" title="Not graded">–</span>`;
+  return `<span class="grade ${GRADE_TONE[g] || "t-flat"}${small ? " sm" : ""}" title="Grade ${esc(g)}: a ranking from backtests, not a probability">${esc(g)}</span>`;
+}
+function stateChip(st){ const i = STATE_INFO[st] || {cls:"st-watch", label:st, help:""}; return `<span class="state ${i.cls}" title="${esc(i.help)}">${esc(i.label)}</span>`; }
+function sigFor(sym){ return (SIG?.signals || []).find(s => s.symbol === sym && s.strategy === "swing" && s.state !== "INVALIDATED" && s.state !== "EXPIRED"); }
+function ukStamp(iso){ try { return new Date(iso).toLocaleString("en-GB", {timeZone:"Europe/London", day:"numeric", month:"short", hour:"2-digit", minute:"2-digit"}) + " UK"; } catch(e){ return ""; } }
+
+function regimeHTML(){
+  if (!REG || !REG.label) return "";
+  const warn = !!REG.overlay, bear = /bearish/i.test(REG.trend || ""), bull = /bullish/i.test(REG.trend || "");
+  const tc = warn ? "var(--warn)" : bull ? "var(--sbull)" : bear ? "var(--sbear)" : "var(--flat)";
+  const pol = REG.policy || {};
+  const x = REG.cross_asset || {};
+  const cell = (k, v) => v == null ? "" : `<span class="xa ${tone(v)}"><span>${esc(k)}</span><b class="num">${fmtScore(v)}</b></span>`;
+  return `<section class="regime" style="--rc:${tc}" aria-label="Market regime">
+    <div class="rhead"><div><div class="k">Market regime</div><div class="rl">${esc(REG.label)}</div>
+      ${REG.overlay && REG.trend ? `<div class="sub">on top of a ${esc(REG.trend.toLowerCase())} trend in US stocks</div>` : `<div class="sub">US stock market trend (${esc(REG.benchmark || "S&P 500")})</div>`}
+      ${REG.stale ? `<div class="stale">Benchmark price is stale</div>` : ""}</div>
+      <div class="xas">${cell("Stocks", x.stocks_indices)}${cell("Bonds", x.bonds)}${cell("Forex", x.forex)}${cell("Commodities", x.commodities)}${cell("Gold", x.gold)}${cell("Crypto", x.crypto)}</div></div>
+    <ul class="weigh">${(REG.evidence || []).slice(0, 5).map(e => `<li>${esc(e)}</li>`).join("")}</ul>
+    ${pol.swing || pol.intraday ? `<div class="rpol">${pol.swing ? `<div><b>Swing:</b> ${esc(pol.swing)}</div>` : ""}${pol.intraday ? `<div><b>Short-term:</b> ${esc(pol.intraday)}</div>` : ""}</div>` : ""}
+    <div class="sub">The regime never switches a signal on or off. It is stamped on every logged trade so results can be split by regime later.</div>
+  </section>`;
+}
+function briefHTML(){
+  if (!SIG?.brief) return "";
+  const b = SIG.brief, c = SIG.counts || {};
+  return `<section class="brief" aria-label="Today's brief">
+    <div class="sh"><h2>${esc(b.headline)}</h2><a href="#signals" class="sub">Open the signal board →</a></div>
+    <div class="counts">${Object.keys(STATE_INFO).map(st => `<a href="#signals" class="cnt ${STATE_INFO[st].cls}"><b class="num">${c[st] ?? 0}</b><span>${esc(STATE_INFO[st].label)}</span></a>`).join("")}</div>
+    <ul class="weigh">${(b.lines || []).map(l => `<li>${esc(l)}</li>`).join("")}${(b.no_trade_reasons || []).map(l => `<li><strong>Why nothing qualifies:</strong> ${esc(l)}</li>`).join("")}</ul>
+  </section>`;
+}
+
+function signalCard(s){
+  const long = s.direction === "long", swing = s.strategy === "swing";
+  const z = s.entry_zone, d = s.distance, tr = s.trade || {};
+  const live = s.state === "ENTRY TRIGGERED", done = s.state === "INVALIDATED" || s.state === "EXPIRED";
+  const rows = [];
+  if (z) rows.push(["Entry zone", `${fmtPrice(z.lo)} – ${fmtPrice(z.hi)}`]);
+  if (s.entry?.price != null) rows.push([s.entry.type === "limit" ? "Limit order at" : "Stop order at", fmtPrice(s.entry.price)]);
+  if (d && !live && !done) rows.push(["Distance to entry", d.side === "in zone" ? `<span class="zchip">in the zone now</span>` : `${d.atr} daily range${d.atr === 1 ? "" : "s"} (${d.pct}%)`]);
+  if (live && tr.entry != null) rows.push(["Filled at", `${fmtPrice(tr.entry)}${tr.fill_date ? ` <span class="sub">${esc(tr.fill_date)}</span>` : ""}`]);
+  if (live && tr.r != null) rows.push(["Marked result", `<b class="${tr.r > 0 ? "up" : tr.r < 0 ? "dn" : ""}">${fR(tr.r)}</b>`]);
+  if (live && tr.mfe_r != null) rows.push(["Best / worst so far", `${fR(tr.mfe_r)} / ${fR(tr.mae_r)}`]);
+  if (s.stop != null) rows.push(["Stop-loss", `<span style="color:var(--warn)">${fmtPrice(s.stop)}</span>`]);
+  (s.targets || []).forEach((t, i) => rows.push([`Reference level ${i + 1}`, `${fmtPrice(t.price)} <span class="sub">${t.rr}× risk · ${esc(t.basis)}</span>`]));
+  if (swing && !(s.targets || []).length) rows.push(["Reference levels", `<span class="sub">none ahead in the last year</span>`]);
+  if (s.hold?.winner_median_bars) rows.push(["Typical hold", `losers ~${s.hold.loser_median_bars} bars, winners ~${s.hold.winner_median_bars} bars`]);
+  if (s.hold?.session) rows.push(["Session", esc(s.hold.session)]);
+  if (s.outcome?.r != null) rows.push(["Result", `<b class="${s.outcome.r > 0 ? "up" : "dn"}">${fR(s.outcome.r)}</b> <span class="sub">${esc(s.outcome.exit_reason || "")}</span>`]);
+  const sh = s.shadow;
+  if (sh && sh.stop != null) rows.push(["Candidate rule (shadow)", `stop ${fmtPrice(sh.stop)}${sh.r != null ? " · " + fR(sh.r) : ""} <span class="sub">${esc(sh.status || "")}</span>`]);
+  const parts = (s.grade_parts || []).map(p => `<div class="gp"><span>${esc(p.text || p.factor)}</span><b class="num ${p.effect > 0.005 ? "up" : p.effect < -0.005 ? "dn" : ""}">${fR(p.effect)}</b></div>`).join("");
+  const list = (title, xs, cls) => xs && xs.length ? `<div class="sl ${cls}"><h4>${title}</h4><ul class="weigh">${xs.map(x => `<li>${esc(x)}</li>`).join("")}</ul></div>` : "";
+  const news = s.news ? `<div class="sl"><h4>Latest catalyst</h4><div class="sub" style="color:var(--ink)"><a href="${esc(safeUrl(s.news.url))}" target="_blank" rel="noopener">${esc(s.news.title)}</a> <span class="tag">${esc(s.news.direction)}</span><span class="tag">${esc(s.news.status)}</span> quality ${s.news.quality}/100</div></div>` : "";
+  const openByDefault = s.state === "APPROACHING ENTRY" || (s.state === "WATCHING" && (s.grade === "A+" || s.grade === "A"));
+  return `<article class="sig ${STATE_INFO[s.state]?.cls || ""} ${long ? "t-sbull" : "t-sbear"}">
+    <div class="sighead">
+      ${gradeBadge(s.grade)}
+      <div style="display:grid;gap:1px;min-width:0"><div><span class="sym" style="font-size:19px">${esc(s.symbol)}</span> <span class="nm">${esc(s.name || "")}</span></div>
+        <div class="sub">${swing ? "Swing" : "Short-term"} · ${esc(s.setup_type || "")}</div></div>
+      <div class="sigmeta"><span class="pill ${long ? "t-sbull" : "t-sbear"}">${long ? "Long" : "Short"}</span>${stateChip(s.state)}</div>
+    </div>
+    <div class="sigpx"><span class="px num">${fmtPrice(s.price)}</span><span class="sub">price as of ${esc(s.price_as_of || "—")}${s.score != null ? ` · trend score ${fmtScore(s.score)}` : ""}</span></div>
+    ${s.chasing ? `<div class="flag"><strong>Don't chase.</strong> Price is ${d ? d.atr : ""} daily ranges beyond the entry zone. The tested entry is the resting order in the zone.</div>` : ""}
+    <div class="sub" style="color:var(--ink)">${esc(s.state_reason || "")}</div>
+    <dl class="kv">${rows.map(([k, v]) => `<div><dt>${esc(k)}</dt><dd>${v}</dd></div>`).join("")}</dl>
+    <details ${openByDefault ? "open" : ""}><summary>Plan, grade and risks</summary>
+      <div class="sigbody">
+        ${s.entry?.trigger ? `<div class="sl"><h4>Entry trigger</h4><div class="sub" style="color:var(--ink)">${esc(s.entry.trigger)}${z?.basis ? " Zone: " + esc(z.basis) + "." : ""}</div></div>` : ""}
+        ${s.invalidation ? `<div class="sl"><h4>Invalidation</h4><div class="sub" style="color:var(--ink)">${esc(s.invalidation)}</div></div>` : ""}
+        ${s.exit_rule ? `<div class="sl"><h4>Exit</h4><div class="sub" style="color:var(--ink)">${esc(s.exit_rule)}</div></div>` : ""}
+        ${parts ? `<div class="sl"><h4>Why grade ${esc(s.grade || "–")} <span class="sub" style="text-transform:none;letter-spacing:0">expected ${fR(s.predicted_r)} per trade in backtests · ${esc(s.grade_basis || "")}</span></h4><div class="gps">${parts}</div></div>`
+                : `<div class="sl"><h4>Grade</h4><div class="sub" style="color:var(--ink)">${esc(s.grade_basis || "Not graded.")}</div></div>`}
+        ${list("Strengths", s.strengths, "ok")}${list("Weaknesses", s.weaknesses, "bad")}${list("Key risks", s.risks, "warn")}
+        ${news}
+      </div></details>
+    <div class="sub">Updated ${esc(ukStamp(SIG.generated_at))}${s.state_since ? ` · in this state since ${esc(ukStamp(s.state_since))}` : ""}${s.signal_date ? ` · signal ${esc(s.signal_date)}` : ""} · rules ${esc(s.version || "")}</div>
+  </article>`;
+}
+function signalsView(v){
+  if (!SIG){ v.innerHTML = `<div class="notice">The signal board appears after the next scheduled update.</div>`; return; }
+  const all = (SIG.signals || []).filter(s => (SIGF.strategy === "all" || s.strategy === SIGF.strategy) && !(SIGF.hideAvoid && s.grade === "Avoid"));
+  const by = st => all.filter(s => s.state === st);
+  const fresh = s => s.state_since && (Date.parse(SIG.generated_at) - Date.parse(s.state_since)) < 30 * 36e5;
+  const sec = (title, sub, xs) => `<div class="section"><div class="sh"><h2>${title} <span class="num sub">${xs.length}</span></h2><span class="sub">${sub}</span></div>${xs.length ? `<div class="sigs">${xs.map(signalCard).join("")}</div>` : `<div class="notice">Nothing here right now.</div>`}</div>`;
+  const live = by("ENTRY TRIGGERED"), newly = live.filter(fresh), older = live.filter(s => !fresh(s));
+  const watch = by("WATCHING"), graded = watch.filter(s => s.grade), forming = watch.filter(s => !s.grade);
+  const pf = SIG.portfolio || {};
+  const btn = (k, val, label) => `<button type="button" class="fbtn ${SIGF[k] === val ? "on" : ""}" data-k="${k}" data-v="${val}">${label}</button>`;
+  v.innerHTML = `<div style="display:grid;gap:18px">
+    ${regimeHTML()}
+    <div class="section"><div class="sh"><h2>Signal board</h2><span class="sub">Updated ${esc(ukStamp(SIG.generated_at))} · prices are end-of-day or delayed, never live</span></div>
+      <div class="filters">${btn("strategy", "all", "All")}${btn("strategy", "swing", "Swing (days to weeks)")}${btn("strategy", "intraday", "Short-term (same day)")}
+        <button type="button" class="fbtn ${SIGF.hideAvoid ? "on" : ""}" data-k="hideAvoid" data-v="toggle">Hide grade Avoid</button></div>
+      <div class="gradekey">${["A+","A","B","C","Avoid"].map(g => gradeBadge(g, true)).join("")}<span class="sub">Grades rank swing setups by how similar setups did in backtests. They are not win probabilities. Most of a grade comes from which market and direction it is. A+ setups averaged −0.21R in 2025 and −0.10R in 2026 in the backtest, and no graded live trade has closed yet. See Performance.</span></div>
+    </div>
+    ${(pf.notes || []).length ? `<section class="alerts"><h3>Combined risk</h3>${pf.notes.map(n => `<div style="font-size:13.5px">${esc(n)}</div>`).join("")}
+      <div class="sub">${pf.open_trades} open swing trade${pf.open_trades === 1 ? "" : "s"}. If every stop were hit from here: about ${fR(-(pf.risk_if_all_stops_hit_from_here_r || 0))} including open profit given back. ${esc(pf.sizing || "")}</div></section>` : ""}
+    ${sec("Approaching entry", "Order is live and price is within one daily range. Not filled yet.", by("APPROACHING ENTRY"))}
+    ${sec("Newly triggered", "Filled in the latest daily bar or session.", newly)}
+    ${sec("Best developing setups", "Signals of 40 or more whose order is still more than one daily range away, best grade first.", graded)}
+    ${sec("Open trades", "Filled earlier and still running under the exit rule.", older)}
+    ${sec("Forming", "Score between 25 and 40. Not a setup yet and not graded.", forming)}
+    ${sec("Invalidated or expired", "Closed in the last 5 days.", by("INVALIDATED").concat(by("EXPIRED")))}
+  </div>`;
+  v.querySelectorAll(".fbtn").forEach(b => b.addEventListener("click", () => {
+    const k = b.dataset.k; if (k === "hideAvoid") SIGF.hideAvoid = !SIGF.hideAvoid; else SIGF[k] = b.dataset.v; signalsView(v);
+  }));
+}
+
+function newsEventHTML(e){
+  const tc = e.direction === "positive" ? "t-sbull" : e.direction === "negative" ? "t-sbear" : "t-flat";
+  const q = e.quality_points || {};
+  const hz = (e.horizon || []).map(h => `<span class="tag">${h === "short" ? "short-term" : "swing"}</span>`).join("");
+  return `<article class="nev ${tc}">
+    <div class="nhead"><h3 style="text-transform:none;letter-spacing:0;font-size:16px">${esc(e.title)}</h3>
+      <div class="qual" title="Quality score"><b class="num">${e.quality}</b><span>/100</span></div></div>
+    <div>${e.new ? `<span class="tag" style="color:var(--hot);border-color:var(--hot)">new</span>` : ""}<span class="tag" style="color:var(--tc);border-color:var(--tc)">${esc(e.direction)}</span><span class="tag">${esc(e.status)}</span><span class="tag">${esc(String(e.category).replace(/_/g, " "))}</span>${hz}${e.widely_reported ? `<span class="tag">widely reported: likely priced in</span>` : ""}
+      ${(e.symbols || []).filter(s => s !== "MARKET").slice(0, 9).map(s => `<span class="zchip" style="margin-right:4px">${esc(s)}</span>`).join("")}${(e.symbols || []).includes("MARKET") ? `<span class="zchip">whole market</span>` : ""}</div>
+    ${e.summary ? `<p style="margin:0;font-size:14px;max-width:80ch">${esc(e.summary)}</p>` : ""}
+    ${e.why ? `<p class="sub" style="margin:0;max-width:80ch"><b>Why it matters:</b> ${esc(e.why)}</p>` : ""}
+    ${e.status_note ? `<p class="sub" style="margin:0">${esc(e.status_note)}</p>` : ""}
+    <div class="sub">First published ${esc(e.published_precision === "day" ? String(e.published).slice(0, 10) : ukStamp(e.published))} · ${e.age_hours < 48 ? Math.round(e.age_hours) + " hours" : Math.round(e.age_hours / 24) + " days"} ago · ${e.independent_sources} independent source${e.independent_sources === 1 ? "" : "s"} from ${e.articles} article${e.articles === 1 ? "" : "s"} · score: source ${q.source ?? 0} + corroboration ${q.corroboration ?? 0} + recency ${q.recency ?? 0} + status ${q.status ?? 0}</div>
+    <div class="srcs">${(e.sources || []).map(s => `<a href="${esc(safeUrl(s.url))}" target="_blank" rel="noopener">${s.origin ? esc(s.origin) + " via " : ""}${esc(s.domain)}</a>`).join("")}</div>
+  </article>`;
+}
+function newsView(v){
+  const cal = eventsHTML();
+  if (!NEWS){ v.innerHTML = `<div style="display:grid;gap:18px"><div class="notice">News intelligence appears after the next scheduled update. The calendar below still updates.</div>${cal}</div>`; return; }
+  const ev = (NEWS.events || []).filter(e => NEWSF === "all" || e.direction === NEWSF || (NEWSF === "new" && e.new));
+  const c = NEWS.counts || {}, dr = Object.entries(NEWS.dropped || {});
+  const btn = (val, label) => `<button type="button" class="fbtn ${NEWSF === val ? "on" : ""}" data-v="${val}">${label}</button>`;
+  v.innerHTML = `<div style="display:grid;gap:18px">
+    <div class="section"><div class="sh"><h2>News intelligence</h2><span class="sub">Collected ${esc(ukStamp(NEWS.generated_at))} · ${c.articles_in ?? 0} articles read, ${c.articles_kept ?? 0} kept, ${c.events ?? 0} events${dr.length ? " · dropped: " + esc(dr.map(([k, n]) => n + " " + k).join(", ")) : ""}</span></div>
+      <p class="sub" style="margin:0;max-width:90ch">Each event is checked by fixed rules, not by opinion: who published it, how many independent sources carry it (copies of one agency story count once), how old it is, and whether it is confirmed, reported or rumour. News never changes a score or a grade: in Signal Desk's own tests news tone did not improve the signals. It is here as context and as risk.</p>
+      <div class="filters">${btn("all", "All")}${btn("new", "New this run")}${btn("positive", "Positive")}${btn("negative", "Negative")}${btn("mixed", "Mixed")}</div></div>
+    ${ev.length ? `<div class="nevs">${ev.map(newsEventHTML).join("")}</div>` : `<div class="notice">No events match.</div>`}
+    <details class="notice"><summary>How the quality score is worked out</summary><p style="margin:8px 0 0">${esc(NEWS.method || "")}</p></details>
+    ${cal}
+  </div>`;
+  v.querySelectorAll(".fbtn").forEach(b => b.addEventListener("click", () => { NEWSF = b.dataset.v; newsView(v); }));
+}
+
+function curveSVG(pts, label){
+  if (!pts || pts.length < 2) return `<div class="sub">Not enough closed trades to draw a curve.</div>`;
+  const W = 520, H = 120, pl = 6, pr = 70, pt = 8, pb = 18;
+  const ys = pts.map(p => p.r).concat([0]), lo = Math.min(...ys), hi = Math.max(...ys), span = (hi - lo) || 1;
+  const x = i => pl + i * (W - pl - pr) / (pts.length - 1), y = r => pt + (hi - r) / span * (H - pt - pb);
+  const d = pts.map((p, i) => (i ? "L" : "M") + x(i).toFixed(1) + " " + y(p.r).toFixed(1)).join("");
+  const last = pts[pts.length - 1];
+  return `<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="${esc(label)}: running total of closed results from ${esc(pts[0].date)} to ${esc(last.date)}, ending at ${fR(last.r)}">
+    <line x1="${pl}" x2="${W - pr}" y1="${y(0)}" y2="${y(0)}" stroke="var(--line)"/>
+    <path d="${d}" fill="none" stroke="${last.r >= 0 ? "var(--sbull)" : "var(--sbear)"}" stroke-width="2"/>
+    <circle cx="${x(pts.length - 1)}" cy="${y(last.r)}" r="3.5" fill="${last.r >= 0 ? "var(--sbull)" : "var(--sbear)"}"/>
+    <text x="${W - pr + 6}" y="${y(last.r) + 4}" font-size="12" fill="var(--ink)" font-family="var(--mono)">${fR(last.r)}</text>
+    <text x="${W - pr + 6}" y="${y(0) + 4}" font-size="11" fill="var(--muted)" font-family="var(--mono)">0</text>
+    <text x="${pl}" y="${H - 3}" font-size="11" fill="var(--muted)">${esc(pts[0].date)}</text>
+    <text x="${W - pr}" y="${H - 3}" font-size="11" fill="var(--muted)" text-anchor="end">${esc(last.date)}</text></svg>`;
+}
+function perfRows(b, extra){
+  const ci = a => a ? ` <span class="sub">(${a[0]} to ${a[1]})</span>` : "";
+  const rows = [["Closed trades", `${b.closed || 0} <span class="tag">${esc(b.reliability || "")}</span>`]];
+  if (b.closed){
+    rows.push(["Win rate", `${pct0(b.win_rate)}${b.win_rate_ci90 ? ` <span class="sub">(${pct0(b.win_rate_ci90[0])} to ${pct0(b.win_rate_ci90[1])})</span>` : ""}`],
+      ["Average win / loss", `${fR(b.avg_win_r)} / ${fR(b.avg_loss_r)}`],
+      ["Expectancy per trade", `<b class="${b.expectancy_r > 0 ? "up" : "dn"}">${fR(b.expectancy_r)}</b>${ci(b.expectancy_ci90)}`],
+      ["Profit factor", b.profit_factor == null ? "—" : b.profit_factor.toFixed(2)],
+      ["Total, closed trades", fR(b.total_r)], ["Maximum drawdown", fR(b.max_drawdown_r)],
+      ["Average hold", b.avg_hold_days == null ? "—" : b.avg_hold_days === 0 ? "same day" : b.avg_hold_days + " days"]);
+  }
+  return rows.concat(extra || []).map(([k, v]) => `<div><dt>${esc(k)}</dt><dd>${v}</dd></div>`).join("");
+}
+function splitTable(title, obj, note){
+  const ks = Object.keys(obj || {}).filter(k => obj[k].closed);
+  if (!ks.length) return "";
+  return `<div class="section"><div class="sh"><h3>${esc(title)}</h3>${note ? `<span class="sub">${esc(note)}</span>` : ""}</div><div class="board"><table style="min-width:520px"><thead><tr><th>Group</th><th class="r">Closed</th><th class="r">Win rate</th><th class="r">Per trade</th><th class="r">Total</th><th>Sample</th></tr></thead><tbody>
+    ${ks.map(k => { const b = obj[k]; return `<tr class="${b.expectancy_r > 0 ? "t-sbull" : "t-sbear"}" style="cursor:default"><td>${esc(k)}</td><td class="r num">${b.closed}</td><td class="r num">${pct0(b.win_rate)}</td><td class="r num">${fR(b.expectancy_r)}</td><td class="r num">${fR(b.total_r)}</td><td class="sub">${esc(b.reliability)}</td></tr>`; }).join("")}
+  </tbody></table></div></div>`;
+}
+function gradeCalHTML(){
+  if (!GMODEL?.development) return "";
+  const dev = GMODEL.development, sl = (GMODEL.second_look || {})["all three together"] || {};
+  const row = g => { const a = dev[g] || {}, b = sl[g] || {}; return `<tr style="cursor:default" class="${GRADE_TONE[g]}"><td>${gradeBadge(g, true)}</td><td class="r num">${a.n ?? "—"}</td><td class="r num">${fR(a.avg_r)}</td><td class="r num">${b.n ?? "—"}</td><td class="r num">${fR(b.avg_r)}</td><td class="r num sub">${b.ci_lo != null ? fR(b.ci_lo) + " to " + fR(b.ci_hi) : "—"}</td><td class="r num">${pct0(b.win)}</td></tr>`; };
+  return `<div class="section"><div class="sh"><h3>Do grades order results? (backtest)</h3><span class="sub">Fitted on ${esc(GMODEL.fitted_on?.from || "")} to ${esc(GMODEL.fitted_on?.to || "")}, ${GMODEL.fitted_on?.trades || ""} trades. "Later and unseen" = watchlist 2023–2026 plus 40 other markets.</span></div>
+    <div class="board"><table style="min-width:600px"><thead><tr><th>Grade</th><th class="r">Fitted: trades</th><th class="r">per trade</th><th class="r">Later and unseen: trades</th><th class="r">per trade</th><th class="r">90% range</th><th class="r">win rate</th></tr></thead><tbody>${["A+","A","B","C","Avoid"].map(row).join("")}</tbody></table></div>
+    <p class="sub" style="margin:0;max-width:95ch">Read this with care. The later-and-unseen data had already been looked at once in an earlier study, so this is a second look, not a clean test. Nearly every A+ there was a bullish crypto setup (857 of 1,123) or a bullish stock setup, so the grade mostly says "which market and direction". A+ results came in bursts: strongly positive in 2017, 2020 and 2024, negative in 2025 (−0.21R) and 2026 (−0.10R). The live log below is the real test.</p></div>`;
+}
+function perfView(v){
+  if (!PERF){ v.innerHTML = `<div class="notice">Performance analytics appear after the next scheduled update.</div>`; return; }
+  const sw = PERF.swing, it = PERF.intraday, bt = PERF.backtest || {}, base = PERF.baseline;
+  const btLine = k => bt[k] ? [`Backtest, same rules`, `${fR(bt[k].avg_r)} per trade, ${pct0(bt[k].win_rate)} wins <span class="sub">${bt[k].trades} trades · ${esc(bt[k].set)}</span>`] : null;
+  const swExtra = [["Open trades", `${sw.open.count} at ${fR(sw.open.marked_r)} marked <span class="sub">(${sw.open.in_profit} in profit)</span>`],
+    ["Closed plus open", `<b class="${sw.closed_plus_open_r > 0 ? "up" : "dn"}">${fR(sw.closed_plus_open_r)}</b>`],
+    ["Signals logged / filled / waiting / never filled", `${sw.signals_logged} / ${sw.filled} / ${sw.pending} / ${sw.unfilled}`], btLine("swing")].filter(Boolean);
+  const itExtra = [["Sessions", `${it.sessions} <span class="sub">trading days</span>`],
+    ["Since the direction fix (11 Nov)", `${it.since_bias_fix.closed || 0} trades${it.since_bias_fix.closed ? ", " + fR(it.since_bias_fix.expectancy_r) + " each" : ""}`], btLine("intraday")].filter(Boolean);
+  const sh = it.shadow || {}, et = sw.entry_timing || {};
+  v.innerHTML = `<div style="display:grid;gap:18px">
+    <div class="section"><div class="sh"><h2>Performance</h2><span class="sub">Live since ${esc(PERF.live_since || "")} · updated ${esc(ukStamp(PERF.generated_at))}</span></div>
+      <p class="sub" style="margin:0;max-width:95ch">${esc(PERF.kind || "")} Three kinds of number appear here and are kept apart: <b>live</b> (the app's own log since it started), <b>backtest</b> (the same rules on history) and <b>shadow</b> (a candidate rule logged beside the live one, not adopted). 1R is the amount risked on one trade. Ranges in brackets are 90% intervals.</p></div>
+    <div class="cards" style="grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr))">
+      <section class="card"><h3>Swing setups <span class="pill t-flat">live paper log</span></h3><dl class="kv">${perfRows(sw.closed, swExtra)}</dl>${curveSVG(sw.curve, "Swing")}</section>
+      <section class="card"><h3>Short-term (crypto intraday) <span class="pill t-flat">live paper log</span></h3><dl class="kv">${perfRows(it.closed, itExtra)}</dl>${curveSVG(it.curve, "Short-term")}
+        <div class="sub">${esc(it.independent_days_note || "")}</div></section>
+    </div>
+    <div class="flag">${esc(sw.note || "")}</div>
+    <div class="section"><div class="sh"><h3>Questions the log is being asked</h3></div><div class="qa">${(PERF.questions || []).map(q => `<div><b>${esc(q.question)}</b><span>${esc(q.answer)}</span><span class="sub">${q.trades} live trade${q.trades === 1 ? "" : "s"} behind the live figure</span></div>`).join("")}</div></div>
+    ${gradeCalHTML()}
+    ${splitTable("Swing by grade", sw.by_grade, "Grades were first stamped on 11 Nov 2026; earlier trades show as not recorded")}
+    ${splitTable("Swing by market and direction", sw.by_setup_type)}
+    ${splitTable("Swing by direction", sw.by_direction)}
+    ${splitTable("Swing by market regime at the signal", sw.by_regime)}
+    ${splitTable("Swing by how the trade ended", sw.by_exit)}
+    ${et.stopped ? `<div class="notice"><b>Entry timing.</b> ${et.stopped_within_2_bars} of ${et.stopped} stopped trades were out within 2 bars${et.stopped_with_excursion_data ? `; ${et.stopped_never_reached_plus_half_r} of the ${et.stopped_with_excursion_data} with a measurable best point never reached +0.5R` : ""}. Best and worst points are measured against the planned risk and ignore moves whose order inside a daily bar cannot be known.</div>` : ""}
+    ${splitTable("Short-term by coin", it.by_coin)}
+    ${splitTable("Short-term by direction", it.by_direction)}
+    <section class="card"><h3>Candidate rule in shadow <span class="pill t-flat">shadow</span></h3>
+      <div class="sub" style="color:var(--ink)">${esc(sh.rule || "")}. It is logged beside the current rule and will not replace it before ${sh.min_sessions || 100} sessions.</div>
+      <dl class="kv"><div><dt>Shadow rule</dt><dd>${sh.closed?.closed || 0} trades${sh.closed?.closed ? ", " + fR(sh.closed.expectancy_r) + " each, total " + fR(sh.closed.total_r) : ""}</dd></div>
+      <div><dt>Current rule, same sessions</dt><dd>${sh.same_sessions_v1?.closed || 0} trades${sh.same_sessions_v1?.closed ? ", " + fR(sh.same_sessions_v1.expectancy_r) + " each, total " + fR(sh.same_sessions_v1.total_r) : ""}</dd></div>
+      ${bt.intraday_shadow ? `<div><dt>Backtest</dt><dd>${fR(bt.intraday_shadow.avg_r)} against ${fR(bt.intraday.avg_r)} per trade <span class="sub">${bt.intraday_shadow.trades} trades</span></dd></div>` : ""}</dl></section>
+    ${base ? `<section class="card"><h3>Baseline before the upgrade</h3><div class="sub" style="color:var(--ink)">${esc(base.what || "")}</div>
+      <dl class="kv"><div><dt>Swing, closed</dt><dd>${base.swing.closed.closed} trades, ${fR(base.swing.closed.total_r)}</dd></div>
+      <div><dt>Swing, open</dt><dd>${base.swing.open.count} trades at ${fR(base.swing.open.marked_r)}</dd></div>
+      <div><dt>Short-term, closed</dt><dd>${base.intraday.closed.closed} trades in ${base.intraday.sessions} sessions, ${fR(base.intraday.closed.total_r)}</dd></div></dl>
+      <div class="sub">${esc(base.note || "")}</div></section>` : ""}
+  </div>`;
+}
+function v2MethodHTML(){
+  return `<h2>Version 2: states, grades, regime and news (11 November 2026)</h2>
+  <p><strong>Nothing about how trades are entered, stopped or exited changed.</strong> Those rules were tested on 20 years of data and are kept as they were (swing rules v1). Version 2 adds what sits around them.</p>
+  <p><strong>Signal states.</strong> Every signal is in one of five states. <em>Watching</em>: a setup is forming, or its order rests more than one daily range from price. <em>Approaching entry</em>: the order is live and price is within one daily range. <em>Entry triggered</em>: the order filled. <em>Invalidated</em>: the stop was hit. <em>Expired</em>: never filled in 10 bars, or ended by the exit rule. Phone alerts fire only when a state changes.</p>
+  <p><strong>Grades (swing).</strong> A grade is the average result, in R, that similar setups had on 2010–2022: the market-and-direction average (pulled toward zero for small samples), plus five smaller effects fitted together and then halved: whether the wider market agrees, where price is relative to the zone, how fresh the signal is, how close the next level is, and whether the zone sits on a level. A+ is +0.50R or more, A +0.30R, B +0.12R, C zero or more, Avoid below zero. Every card shows the sum. A grade is a ranking, not a probability. Three findings went against common belief and are used as found: setups with <em>less</em> room to the next level did better, zones with <em>no</em> nearby level did better, and scores of 40–55 did better than 55+.</p>
+  <p><strong>Bearish setups</strong> are kept and graded like the rest. In the backtest they lost in every asset class (−0.39R a trade over 3,070 trades on later and unseen data), so they grade C or Avoid. The live log tracks them separately so that verdict can be overturned by evidence.</p>
+  <p><strong>Market regime.</strong> From the S&amp;P 500's position against its 50-day and 200-day averages and its trend score: strong or moderate bullish, sideways, moderate or strong bearish. Three overlays take priority: unstable (a daily move over 3 standard deviations in the last 5 bars, or volatility at twice normal), high volatility (over 1.5 times normal) and risk-off (stocks leaning bearish while bonds or gold lean bullish).</p>
+  <p><strong>Short-term.</strong> One intraday rule survived testing: the crypto London range breakout. Two things changed. A logging bug was fixed: direction now comes from the score at the previous day's close, as in the test, not from the score at each update. And a candidate with a wider minimum stop (0.15 daily ranges) is logged in shadow; a cost filter, a strong-score filter, one-direction-only and a two-coins-a-day cap were tested and rejected. Intraday rules for stocks, indices, forex and commodities failed their tests on 2 November and were not searched again on the same two years of data. No VWAP or relative-volume rule is shown because the free data has no usable minute-by-minute history to test one on.</p>
+  <p><strong>News.</strong> Articles are gathered by an AI research step, then checked by fixed rules: source type, independent sources (agency copy counts once), age and status. News is context and risk; it does not move a score or grade.</p>`;
+}
+
 function methodHTML(){
   return `<div class="prose">
+  ${v2MethodHTML()}
   <h2>How the score works</h2>
   <p>Each asset gets a score from −100 (strongly bearish) to +100 (strongly bullish), from daily closing prices. Only signals with published evidence behind them count, and each one is measured against the asset's own volatility, so a 2% move in a calm currency counts for more than a 2% move in Bitcoin.</p>
   <p><strong>Colours:</strong> ${pill("Bullish",50)} +40 or more, ${pill("Leaning bullish",20)} +15 to +40, ${pill("Neutral",0)} −15 to +15, ${pill("Leaning bearish",-20)} −15 to −40, ${pill("Bearish",-50)} −40 or lower. Boards list the strongest readings first, whichever direction. The signals work on a timescale of weeks to months.</p>

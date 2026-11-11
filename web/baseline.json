@@ -1,0 +1,311 @@
+{
+ "taken": "2026-11-11T13:42Z",
+ "what": "Live paper log as it stood before the 11 Nov 2026 upgrade (scorecard.json and intraday.json of that run).",
+ "swing": {
+  "signals_logged": 31,
+  "filled": 24,
+  "pending": 7,
+  "closed": {
+   "closed": 12,
+   "reliability": "too few to conclude",
+   "win_rate": 0.0,
+   "win_rate_ci90": [
+    0.0,
+    0.184
+   ],
+   "avg_win_r": null,
+   "avg_loss_r": -1.041,
+   "expectancy_r": -1.041,
+   "expectancy_ci90": [
+    -1.066,
+    -1.02
+   ],
+   "profit_factor": 0.0,
+   "total_r": -12.49,
+   "max_drawdown_r": -12.49,
+   "avg_hold_days": 1.1,
+   "best_r": -1.0,
+   "worst_r": -1.19
+  },
+  "open": {
+   "count": 12,
+   "marked_r": 12.25,
+   "in_profit": 12
+  },
+  "closed_plus_open_r": -0.24,
+  "by_setup_type": {
+   "bond bearish": {
+    "closed": 2,
+    "reliability": "too few to conclude",
+    "win_rate": 0.0,
+    "win_rate_ci90": [
+     0.0,
+     0.575
+    ],
+    "avg_win_r": null,
+    "avg_loss_r": -1.06,
+    "expectancy_r": -1.06,
+    "expectancy_ci90": null,
+    "profit_factor": 0.0,
+    "total_r": -2.12,
+    "max_drawdown_r": -2.12,
+    "avg_hold_days": 2.0,
+    "best_r": -1.04,
+    "worst_r": -1.08
+   },
+   "commodity bearish": {
+    "closed": 1,
+    "reliability": "too few to conclude",
+    "win_rate": 0.0,
+    "win_rate_ci90": [
+     0.0,
+     0.73
+    ],
+    "avg_win_r": null,
+    "avg_loss_r": -1.024,
+    "expectancy_r": -1.024,
+    "expectancy_ci90": null,
+    "profit_factor": 0.0,
+    "total_r": -1.02,
+    "max_drawdown_r": -1.02,
+    "avg_hold_days": 1.0,
+    "best_r": -1.02,
+    "worst_r": -1.02
+   },
+   "commodity bullish": {
+    "closed": 4,
+    "reliability": "too few to conclude",
+    "win_rate": 0.0,
+    "win_rate_ci90": [
+     0.0,
+     0.404
+    ],
+    "avg_win_r": null,
+    "avg_loss_r": -1.059,
+    "expectancy_r": -1.059,
+    "expectancy_ci90": null,
+    "profit_factor": 0.0,
+    "total_r": -4.24,
+    "max_drawdown_r": -4.24,
+    "avg_hold_days": 1.5,
+    "best_r": -1.01,
+    "worst_r": -1.19
+   },
+   "index bullish": {
+    "closed": 3,
+    "reliability": "too few to conclude",
+    "win_rate": 0.0,
+    "win_rate_ci90": [
+     0.0,
+     0.474
+    ],
+    "avg_win_r": null,
+    "avg_loss_r": -1.015,
+    "expectancy_r": -1.015,
+    "expectancy_ci90": null,
+    "profit_factor": 0.0,
+    "total_r": -3.04,
+    "max_drawdown_r": -3.04,
+    "avg_hold_days": 0.7,
+    "best_r": -1.01,
+    "worst_r": -1.02
+   },
+   "stock bullish": {
+    "closed": 2,
+    "reliability": "too few to conclude",
+    "win_rate": 0.0,
+    "win_rate_ci90": [
+     0.0,
+     0.575
+    ],
+    "avg_win_r": null,
+    "avg_loss_r": -1.031,
+    "expectancy_r": -1.031,
+    "expectancy_ci90": null,
+    "profit_factor": 0.0,
+    "total_r": -2.06,
+    "max_drawdown_r": -2.06,
+    "avg_hold_days": 0.0,
+    "best_r": -1.0,
+    "worst_r": -1.06
+   }
+  },
+  "by_exit": {
+   "opened beyond stop": {
+    "closed": 1,
+    "reliability": "too few to conclude",
+    "win_rate": 0.0,
+    "win_rate_ci90": [
+     0.0,
+     0.73
+    ],
+    "avg_win_r": null,
+    "avg_loss_r": -1.0,
+    "expectancy_r": -1.0,
+    "expectancy_ci90": null,
+    "profit_factor": 0.0,
+    "total_r": -1.0,
+    "max_drawdown_r": -1.0,
+    "avg_hold_days": 0.0,
+    "best_r": -1.0,
+    "worst_r": -1.0
+   },
+   "stop": {
+    "closed": 11,
+    "reliability": "too few to conclude",
+    "win_rate": 0.0,
+    "win_rate_ci90": [
+     0.0,
+     0.197
+    ],
+    "avg_win_r": null,
+    "avg_loss_r": -1.044,
+    "expectancy_r": -1.044,
+    "expectancy_ci90": [
+     -1.072,
+     -1.024
+    ],
+    "profit_factor": 0.0,
+    "total_r": -11.49,
+    "max_drawdown_r": -11.49,
+    "avg_hold_days": 1.2,
+    "best_r": -1.01,
+    "worst_r": -1.19
+   }
+  }
+ },
+ "intraday": {
+  "closed": {
+   "closed": 21,
+   "reliability": "too few to conclude",
+   "win_rate": 0.429,
+   "win_rate_ci90": [
+    0.269,
+    0.604
+   ],
+   "avg_win_r": 3.444,
+   "avg_loss_r": -1.218,
+   "expectancy_r": 0.78,
+   "expectancy_ci90": [
+    -0.135,
+    1.688
+   ],
+   "profit_factor": 2.12,
+   "total_r": 16.39,
+   "max_drawdown_r": -8.96,
+   "avg_hold_days": 0.0,
+   "best_r": 6.8,
+   "worst_r": -1.63
+  },
+  "sessions": 8,
+  "by_coin": {
+   "BTC": {
+    "closed": 4,
+    "reliability": "too few to conclude",
+    "win_rate": 0.5,
+    "win_rate_ci90": [
+     0.182,
+     0.818
+    ],
+    "avg_win_r": 2.556,
+    "avg_loss_r": -1.379,
+    "expectancy_r": 0.588,
+    "expectancy_ci90": null,
+    "profit_factor": 1.85,
+    "total_r": 2.35,
+    "max_drawdown_r": -1.63,
+    "avg_hold_days": 0.0,
+    "best_r": 3.03,
+    "worst_r": -1.63
+   },
+   "ETH": {
+    "closed": 4,
+    "reliability": "too few to conclude",
+    "win_rate": 0.5,
+    "win_rate_ci90": [
+     0.182,
+     0.818
+    ],
+    "avg_win_r": 4.151,
+    "avg_loss_r": -1.308,
+    "expectancy_r": 1.421,
+    "expectancy_ci90": null,
+    "profit_factor": 3.17,
+    "total_r": 5.69,
+    "max_drawdown_r": -2.62,
+    "avg_hold_days": 0.0,
+    "best_r": 6.8,
+    "worst_r": -1.46
+   },
+   "SOL": {
+    "closed": 6,
+    "reliability": "too few to conclude",
+    "win_rate": 0.5,
+    "win_rate_ci90": [
+     0.221,
+     0.779
+    ],
+    "avg_win_r": 3.71,
+    "avg_loss_r": -1.185,
+    "expectancy_r": 1.262,
+    "expectancy_ci90": [
+     -0.372,
+     2.914
+    ],
+    "profit_factor": 3.13,
+    "total_r": 7.58,
+    "max_drawdown_r": -1.27,
+    "avg_hold_days": 0.0,
+    "best_r": 4.26,
+    "worst_r": -1.27
+   },
+   "XRP": {
+    "closed": 7,
+    "reliability": "too few to conclude",
+    "win_rate": 0.286,
+    "win_rate_ci90": [
+     0.1,
+     0.591
+    ],
+    "avg_win_r": 3.228,
+    "avg_loss_r": -1.137,
+    "expectancy_r": 0.11,
+    "expectancy_ci90": [
+     -1.13,
+     1.519
+    ],
+    "profit_factor": 1.14,
+    "total_r": 0.77,
+    "max_drawdown_r": -3.43,
+    "avg_hold_days": 0.0,
+    "best_r": 4.97,
+    "worst_r": -1.28
+   }
+  },
+  "by_direction": {
+   "short": {
+    "closed": 21,
+    "reliability": "too few to conclude",
+    "win_rate": 0.429,
+    "win_rate_ci90": [
+     0.269,
+     0.604
+    ],
+    "avg_win_r": 3.444,
+    "avg_loss_r": -1.218,
+    "expectancy_r": 0.78,
+    "expectancy_ci90": [
+     -0.135,
+     1.688
+    ],
+    "profit_factor": 2.12,
+    "total_r": 16.39,
+    "max_drawdown_r": -8.96,
+    "avg_hold_days": 0.0,
+    "best_r": 6.8,
+    "worst_r": -1.63
+   }
+  }
+ },
+ "note": "Intraday entries in this baseline took their direction from the live score at each run (fixed on 11 Nov 2026)."
+}
