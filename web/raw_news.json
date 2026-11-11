@@ -1,0 +1,211 @@
+{
+ "collected_at": "2026-11-11T19:05:00Z",
+ "collector": "Claude (web search + Twelve Data company news), manual first run",
+ "items": [
+  {
+   "title": "AI-stock sell-off sends the S&P 500 down 4.4%, its worst day since April 2025",
+   "summary": "On Thursday 5 November the S&P 500 fell 4.4%, the Dow 3.4% and the Nasdaq composite 5.5%, led by companies tied to AI data-centre spending. Every S&P 500 sector fell.",
+   "why": "A shock day for US stocks: it pushed volatility up and is why the market regime reads Unstable.",
+   "url": "https://www.kptv.com/2026/11/05/brutal-sell-off-ai-stocks-sends-wall-street-reeling-sp-500-sees-worst-day-since-2025-liberation-day-tariffs/?outputType=apps",
+   "published": "2026-11-05T22:17:00Z",
+   "origin": "AP",
+   "symbols": [
+    "MARKET",
+    "SPY",
+    "QQQ",
+    "US500",
+    "NAS100",
+    "US30",
+    "NVDA",
+    "TSLA",
+    "MSFT"
+   ],
+   "category": "sector",
+   "direction": "negative",
+   "status": "confirmed",
+   "materiality": 3,
+   "horizon": [
+    "short",
+    "swing"
+   ],
+   "related": [
+    "AMD",
+    "semiconductors"
+   ],
+   "also_urls": [
+    "https://stockanalysis.com/news/sp-500-record-one-day-market-value-loss/"
+   ]
+  },
+  {
+   "title": "A brutal sell-off for AI stocks sends Wall Street reeling, and the S&P 500 tumbles 4.4%",
+   "summary": "The Dow dropped more than 1,800 points and the Nasdaq composite fell 5.5%.",
+   "why": "Second copy of the same agency story on another site.",
+   "url": "https://www.boston.com/news/national-news/2026/11/05/a-brutal-sell-off-for-ai-stocks-sends-wall-street-reeling-and-the-sp-500-tumbles-4-4/",
+   "published": "2026-11-05",
+   "origin": "AP",
+   "symbols": [
+    "MARKET",
+    "SPY",
+    "US500"
+   ],
+   "category": "sector",
+   "direction": "negative",
+   "status": "confirmed",
+   "materiality": 3
+  },
+  {
+   "title": "Nasdaq has its steepest weekly fall in 19 months after the US midterms; Tesla lost 10.8% on Thursday",
+   "summary": "A week-in-review says about $3 trillion of market value was erased on 5 November as investors weighed tighter AI regulation after Democrats won both chambers of Congress. Nvidia fell 9.3% and Tesla 10.8% that day; both bounced about 5% on Friday.",
+   "why": "Explains the size of last week's moves in the watchlist's largest stocks.",
+   "url": "https://hdfcsky.com/news/nasdaq-crashes-3-4percent-as-democratic-sweep-triggers-3-trillion-ai-sell-off",
+   "published": "2026-11-07",
+   "symbols": [
+    "TSLA",
+    "NVDA",
+    "QQQ",
+    "NAS100"
+   ],
+   "category": "policy",
+   "direction": "negative",
+   "status": "reported",
+   "materiality": 2,
+   "horizon": [
+    "swing"
+   ]
+  },
+  {
+   "title": "Nvidia falls as its board opens an independent investigation; wider market rallies",
+   "summary": "Reports say Nvidia's board opened an independent investigation involving its chief executive over the weekend. The shares opened about 8% lower on Monday 9 November while the S&P 500 rose.",
+   "why": "Company-specific risk in the index's largest stock, with earnings due on 17 November. Not yet backed by a company filing seen in this run.",
+   "url": "https://www.tradingnews.com/news/sp500-hirts-7517-nasdaq-jumps-578-points-dow-climbs-to-52139",
+   "published": "2026-11-09",
+   "symbols": [
+    "NVDA"
+   ],
+   "category": "management",
+   "direction": "negative",
+   "status": "reported",
+   "materiality": 3,
+   "horizon": [
+    "short",
+    "swing"
+   ],
+   "also_urls": [
+    "https://www.staradvertiser.com/2026/11/09/breaking-news/wall-street-rallies-after-last-weeks-ai-rout-nvidia-falls/"
+   ],
+   "related": [
+    "semiconductors"
+   ]
+  },
+  {
+   "title": "Markets price a high chance of a December Fed rate rise after strong US jobs data",
+   "summary": "After a stronger-than-expected October jobs report, traders put the odds of a December rate rise at about 80%, which capped gold's gains.",
+   "why": "Rate expectations drive bonds, the dollar and gold; US CPI this week is the next test.",
+   "url": "https://investinglive.com/commodities/gold-ticks-higher-on-softer-oil-but-fed-s-80-december-hike-odds-cap-gain/",
+   "published": "2026-11-09",
+   "symbols": [
+    "MARKET",
+    "ZT",
+    "ZF",
+    "ZN",
+    "ZB",
+    "GOLD"
+   ],
+   "category": "rates",
+   "direction": "negative",
+   "status": "reported",
+   "materiality": 3,
+   "also_urls": [
+    "https://www.staradvertiser.com/2026/11/09/breaking-news/wall-street-rallies-after-last-weeks-ai-rout-nvidia-falls/"
+   ]
+  },
+  {
+   "title": "Gold rises to a two-week high above $4,100 as oil falls and the dollar weakens",
+   "summary": "Gold and silver extended their recovery on 9 November as lower oil prices eased inflation worries. China's central bank bought 25.8 tonnes of gold in October, its largest monthly addition in three years.",
+   "why": "Runs against the app's bearish trend reading on gold and silver.",
+   "url": "https://tradingeconomics.com/commodity/gold/news/599634",
+   "published": "2026-11-09T14:43:00Z",
+   "symbols": [
+    "GOLD",
+    "SILVER"
+   ],
+   "category": "sector",
+   "direction": "positive",
+   "status": "reported",
+   "materiality": 2,
+   "also_urls": [
+    "https://www.economies.com/markets/europe-news/gold-climbs-above-4-100-as-weaker-dollar-and-falling-oil-prices-lift-precious-metals-50547"
+   ]
+  },
+  {
+   "title": "Oil drops on hopes of US-Iran de-escalation; Brent down from $112 at the start of November",
+   "summary": "Brent crude fell about 4% to roughly $94 on 9 November on hopes of diplomatic progress between Washington and Tehran.",
+   "why": "Headline-driven: oil can gap either way on news from the Gulf, straight through chart levels.",
+   "url": "https://www.tradingnews.com/news/sp500-hirts-7517-nasdaq-jumps-578-points-dow-climbs-to-52139",
+   "published": "2026-11-09",
+   "symbols": [
+    "WTI"
+   ],
+   "category": "policy",
+   "direction": "negative",
+   "status": "reported",
+   "materiality": 3,
+   "horizon": [
+    "short",
+    "swing"
+   ],
+   "also_urls": [
+    "https://www.economies.com/markets/europe-news/gold-climbs-above-4-100-as-weaker-dollar-and-falling-oil-prices-lift-precious-metals-50547"
+   ]
+  },
+  {
+   "title": "Bitcoin below $75,000 as spot ETF outflows continue",
+   "summary": "Bitcoin stayed under $75,000 on 9 November with a rebound proving elusive; JPMorgan estimated $431 million left spot bitcoin ETFs the previous Thursday. Ether was near $2,108.",
+   "why": "Fund outflows are steady selling pressure and fit the bearish scores on all four coins.",
+   "url": "https://www.morningstar.com/news/dow-jones/202611091075/bitcoin-below-75000-as-rebound-remains-elusive",
+   "published": "2026-11-09T07:12:00Z",
+   "origin": "Dow Jones",
+   "symbols": [
+    "BTC",
+    "ETH"
+   ],
+   "category": "institutional",
+   "direction": "negative",
+   "status": "confirmed",
+   "materiality": 2
+  },
+  {
+   "title": "Dollar slides to a one-month low after the US midterms as oil and Treasury yields fall",
+   "summary": "The dollar fell after Democrats' midterm victory; the euro rose to about $1.126 and the 10-year Treasury yield dropped to 4.85%, its lowest since 10 September.",
+   "why": "Runs against the app's bearish trend reading on EUR/USD and Treasury futures.",
+   "url": "https://maaal.com/en/news/details/dollar-slides-as-us-elect/",
+   "published": "2026-11-05",
+   "origin": "Reuters",
+   "symbols": [
+    "EUR/USD",
+    "GBP/USD",
+    "USD/JPY",
+    "ZN"
+   ],
+   "category": "policy",
+   "direction": "mixed",
+   "status": "reported",
+   "materiality": 2
+  },
+  {
+   "title": "Dollar firms on safe-haven demand after the AI sell-off, though lower yields cap gains",
+   "summary": "On 6 November the dollar index rose 0.25% to 101.76 and the euro slipped to about $1.12 ahead of the US payrolls report.",
+   "why": "Shows the dollar's direction changing day to day: a choppy backdrop for FX trend setups.",
+   "url": "https://www.shafaq.com/en/Economy/Dollar-firms-amid-AI-selloff-falling-Treasury-yields",
+   "published": "2026-11-06T08:46:06Z",
+   "symbols": [
+    "EUR/USD",
+    "USD/JPY"
+   ],
+   "category": "policy",
+   "direction": "mixed",
+   "status": "reported",
+   "materiality": 1
+  }
+ ]
+}

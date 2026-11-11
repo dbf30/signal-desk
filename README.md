@@ -37,6 +37,19 @@ Integrity checks:
 
 **Known caveat:** free futures data is not adjusted for contract rolls, so prices jump each time a futures contract rolls over. This can make short trades look worse than they are.
 
+## Version 2 (11 November 2026)
+
+Entry, stop and exit rules are unchanged (`trades.py`, `intraday.py` rule v1). Version 2 adds the layer around them:
+
+- **Signal lifecycle** (`plans.py`): every signal is WATCHING, APPROACHING ENTRY, ENTRY TRIGGERED, INVALIDATED or EXPIRED, with a full trade plan (zone, order, distance, stop, reference levels, exit rule, risks).
+- **Grades** (`plans.py`, `web/grade_model.json`): A+ to Avoid from a small additive model fitted on 2010–2022 trades. On a second look at later and unseen data A-or-better beat the rest by 0.91R a trade, but most of that is market and direction (857 of 1,123 A+ trades were bullish crypto), and A+ averaged −0.21R in 2025 and −0.10R in 2026.
+- **Market regime** (`regime.py`): trend of the S&P 500 plus unstable / high-volatility / risk-off overlays. Stamped on every logged trade; it never switches signals off.
+- **News intelligence** (`news.py`): deterministic validation, clustering, source rating and corroboration counting over articles gathered by a research step. News does not change scores or grades.
+- **Performance analytics** (`analytics.py`): live paper log split by grade, setup, direction, regime and exit, with intervals and sample-size labels; backtest and shadow figures kept separate.
+- **Intraday**: a logging bug fixed (direction now fixed at the previous close, as tested) and a wider-stop variant logged in shadow (`intraday-v2-stopfloor`).
+
+Plan, results and an audit note: [`research/PREREG_V2.md`](research/PREREG_V2.md).
+
 ## How it works
 
 | File | Role |
@@ -64,7 +77,13 @@ pip install numpy pandas
 cd engine
 python3 run.py --out ../web/data.json                 # fetch prices and score every market
 python3 levels.py --data ../web/data.json --out ../web/setups.json
-for t in test_*.py; do python3 "$t"; done             # 5 test files
+python3 regime.py --data ../web/data.json --out ../web/regime.json
+python3 scorecard.py --data ../web/data.json --setups ../web/setups.json --prev ../web/scorecard.json --regime ../web/regime.json --model ../web/grade_model.json --out ../web/scorecard.json
+python3 intraday.py --data ../web/data.json --prev ../web/intraday.json --out ../web/intraday.json
+python3 news.py --raw ../web/raw_news.json --prev ../web/news.json --out ../web/news.json
+python3 plans.py --data ../web/data.json --setups ../web/setups.json --scorecard ../web/scorecard.json --regime ../web/regime.json --model ../web/grade_model.json --stats ../web/setup_stats.json --intraday ../web/intraday.json --catalysts ../web/catalysts.json --news ../web/news.json --prev ../web/signals.json --out ../web/signals.json
+python3 analytics.py --scorecard ../web/scorecard.json --intraday ../web/intraday.json --baseline ../web/baseline.json --out ../web/performance.json
+for t in test_*.py; do python3 "$t"; done             # 7 test files
 ```
 
 The dashboard is deployed to GitHub Pages from `web/`. To view it locally, serve `web/` with any static file server (for example `python3 -m http.server -d web`).

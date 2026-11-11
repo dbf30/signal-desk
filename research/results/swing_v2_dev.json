@@ -1,0 +1,435 @@
+{
+ "q1": {
+  "closed_only_bias": {
+   "starts": 300,
+   "median_closed": 5.0,
+   "median_closed_r": -5.18,
+   "share_of_starts_closed_total_negative": 0.96,
+   "share_of_starts_with_5plus_closed_and_no_winner": 0.507,
+   "median_open_r": 6.11,
+   "median_closed_plus_open": 1.29,
+   "avg_closed_r_per_closed_trade": -1.074,
+   "avg_closed_plus_open_per_start": 0.11
+  },
+  "horizon_marked_r": {
+   "bond:bearish": {
+    "n": 3634,
+    "5": 0.039,
+    "10": 0.024,
+    "20": 0.116,
+    "40": 0.322,
+    "60": 0.423
+   },
+   "bond:bullish": {
+    "n": 3558,
+    "5": 0.02,
+    "10": 0.049,
+    "20": 0.159,
+    "40": 0.305,
+    "60": 0.498
+   },
+   "commodity:bearish": {
+    "n": 6282,
+    "5": -0.083,
+    "10": -0.132,
+    "20": -0.109,
+    "40": -0.243,
+    "60": -0.328
+   },
+   "commodity:bullish": {
+    "n": 6782,
+    "5": -0.013,
+    "10": 0.043,
+    "20": 0.06,
+    "40": 0.136,
+    "60": 0.124
+   },
+   "crypto:bearish": {
+    "n": 822,
+    "5": 0.04,
+    "10": 0.018,
+    "20": -0.047,
+    "40": -0.031,
+    "60": 0.043
+   },
+   "crypto:bullish": {
+    "n": 1441,
+    "5": 0.316,
+    "10": 0.751,
+    "20": 1.282,
+    "40": 1.608,
+    "60": 2.008
+   },
+   "fx:bearish": {
+    "n": 3987,
+    "5": 0.018,
+    "10": 0.069,
+    "20": 0.134,
+    "40": 0.185,
+    "60": 0.18
+   },
+   "fx:bullish": {
+    "n": 3091,
+    "5": -0.047,
+    "10": -0.037,
+    "20": -0.007,
+    "40": 0.064,
+    "60": 0.143
+   },
+   "index:bearish": {
+    "n": 1781,
+    "5": -0.161,
+    "10": -0.222,
+    "20": -0.35,
+    "40": -0.482,
+    "60": -0.583
+   },
+   "index:bullish": {
+    "n": 7916,
+    "5": 0.041,
+    "10": 0.052,
+    "20": 0.064,
+    "40": 0.05,
+    "60": 0.075
+   },
+   "stock:bearish": {
+    "n": 1825,
+    "5": -0.108,
+    "10": -0.181,
+    "20": -0.294,
+    "40": -0.55,
+    "60": -0.746
+   },
+   "stock:bullish": {
+    "n": 10358,
+    "5": 0.081,
+    "10": 0.19,
+    "20": 0.348,
+    "40": 0.581,
+    "60": 0.757
+   },
+   "ALL": {
+    "n": 51477,
+    "5": 0.014,
+    "10": 0.051,
+    "20": 0.116,
+    "40": 0.183,
+    "60": 0.237
+   }
+  },
+  "time_to_close_bars": {
+   "losers_median": 6.0,
+   "winners_median": 61.0
+  },
+  "cost_as_share_of_risk": {
+   "swing_median": 0.0198,
+   "swing_mean": 0.0316
+  }
+ },
+ "q2_dev": {
+  "group": {
+   "table": [
+    {
+     "group": "bond:bearish",
+     "n": 260,
+     "avg_r": 0.07,
+     "win": 0.212,
+     "h1": -0.517,
+     "h2": 0.551
+    },
+    {
+     "group": "bond:bullish",
+     "n": 215,
+     "avg_r": 0.181,
+     "win": 0.233,
+     "h1": -0.233,
+     "h2": 1.136
+    },
+    {
+     "group": "commodity:bearish",
+     "n": 563,
+     "avg_r": -0.408,
+     "win": 0.117,
+     "h1": -0.274,
+     "h2": -0.611
+    },
+    {
+     "group": "commodity:bullish",
+     "n": 592,
+     "avg_r": -0.049,
+     "win": 0.152,
+     "h1": -0.073,
+     "h2": -0.029
+    },
+    {
+     "group": "crypto:bearish",
+     "n": 136,
+     "avg_r": 0.043,
+     "win": 0.221,
+     "h1": -0.971,
+     "h2": 0.124
+    },
+    {
+     "group": "crypto:bullish",
+     "n": 136,
+     "avg_r": 2.145,
+     "win": 0.39,
+     "h1": 2.772,
+     "h2": 2.067
+    },
+    {
+     "group": "fx:bearish",
+     "n": 282,
+     "avg_r": -0.013,
+     "win": 0.206,
+     "h1": -0.056,
+     "h2": 0.043
+    },
+    {
+     "group": "fx:bullish",
+     "n": 233,
+     "avg_r": -0.082,
+     "win": 0.167,
+     "h1": -0.146,
+     "h2": -0.004
+    },
+    {
+     "group": "index:bearish",
+     "n": 150,
+     "avg_r": -0.611,
+     "win": 0.113,
+     "h1": -0.83,
+     "h2": -0.484
+    },
+    {
+     "group": "index:bullish",
+     "n": 560,
+     "avg_r": 0.065,
+     "win": 0.207,
+     "h1": 0.107,
+     "h2": 0.023
+    },
+    {
+     "group": "stock:bearish",
+     "n": 182,
+     "avg_r": -0.579,
+     "win": 0.104,
+     "h1": -0.843,
+     "h2": -0.362
+    },
+    {
+     "group": "stock:bullish",
+     "n": 753,
+     "avg_r": 0.525,
+     "win": 0.23,
+     "h1": 0.51,
+     "h2": 0.54
+    }
+   ],
+   "verdict": "PASS (best stock:bullish vs worst index:bearish: gap 1.14R, holds in both halves: True)"
+  },
+  "f_score": {
+   "table": [
+    {
+     "f_score": "40-55",
+     "n": 1831,
+     "avg_r": 0.152,
+     "win": 0.212,
+     "h1": 0.1,
+     "h2": 0.203
+    },
+    {
+     "f_score": "55-70",
+     "n": 851,
+     "avg_r": -0.02,
+     "win": 0.172,
+     "h1": -0.155,
+     "h2": 0.122
+    },
+    {
+     "f_score": "70+",
+     "n": 1380,
+     "avg_r": 0.034,
+     "win": 0.167,
+     "h1": -0.19,
+     "h2": 0.224
+    }
+   ],
+   "verdict": "PASS (best 40-55 vs worst 55-70: gap 0.17R, holds in both halves: True)"
+  },
+  "f_room": {
+   "table": [
+    {
+     "f_room": "1.5-3",
+     "n": 1110,
+     "avg_r": -0.045,
+     "win": 0.183,
+     "h1": -0.102,
+     "h2": 0.01
+    },
+    {
+     "f_room": "3+",
+     "n": 235,
+     "avg_r": -0.01,
+     "win": 0.153,
+     "h1": -0.232,
+     "h2": 0.14
+    },
+    {
+     "f_room": "<1.5",
+     "n": 2633,
+     "avg_r": 0.127,
+     "win": 0.195,
+     "h1": -0.013,
+     "h2": 0.262
+    },
+    {
+     "f_room": "no level",
+     "n": 84,
+     "avg_r": 0.32,
+     "win": 0.155,
+     "h1": -0.115,
+     "h2": 0.679
+    }
+   ],
+   "verdict": "PASS (best <1.5 vs worst 1.5-3: gap 0.17R, holds in both halves: True)"
+  },
+  "f_stretch": {
+   "table": [
+    {
+     "f_stretch": "ok",
+     "n": 3383,
+     "avg_r": 0.023,
+     "win": 0.183,
+     "h1": -0.13,
+     "h2": 0.174
+    },
+    {
+     "f_stretch": "stretched",
+     "n": 679,
+     "avg_r": 0.338,
+     "win": 0.215,
+     "h1": 0.411,
+     "h2": 0.284
+    }
+   ],
+   "verdict": "PASS (best stretched vs worst ok: gap 0.32R, holds in both halves: True)"
+  },
+  "f_dist": {
+   "table": [
+    {
+     "f_dist": "1-2",
+     "n": 305,
+     "avg_r": 0.032,
+     "win": 0.19,
+     "h1": 0.165,
+     "h2": -0.083
+    },
+    {
+     "f_dist": "<=1",
+     "n": 2200,
+     "avg_r": 0.017,
+     "win": 0.195,
+     "h1": -0.113,
+     "h2": 0.134
+    },
+    {
+     "f_dist": ">2",
+     "n": 71,
+     "avg_r": -0.402,
+     "win": 0.141,
+     "h1": -0.038,
+     "h2": -0.626
+    },
+    {
+     "f_dist": "in zone",
+     "n": 1486,
+     "avg_r": 0.195,
+     "win": 0.182,
+     "h1": -0.004,
+     "h2": 0.403
+    }
+   ],
+   "verdict": "PASS (best in zone vs worst <=1: gap 0.18R, holds in both halves: True)"
+  },
+  "f_vol": {
+   "table": [
+    {
+     "f_vol": "<=1.5",
+     "n": 3748,
+     "avg_r": 0.089,
+     "win": 0.188,
+     "h1": -0.045,
+     "h2": 0.221
+    },
+    {
+     "f_vol": ">1.5",
+     "n": 314,
+     "avg_r": -0.077,
+     "win": 0.194,
+     "h1": -0.126,
+     "h2": -0.051
+    }
+   ],
+   "verdict": "PASS (best <=1.5 vs worst >1.5: gap 0.17R, holds in both halves: True)"
+  },
+  "backdrop": {
+   "table": [
+    {
+     "backdrop": "against",
+     "n": 296,
+     "avg_r": -0.118,
+     "win": 0.176,
+     "h1": -0.301,
+     "h2": 0.033
+    },
+    {
+     "backdrop": "n/a",
+     "n": 2145,
+     "avg_r": -0.104,
+     "win": 0.167,
+     "h1": -0.204,
+     "h2": 0.011
+    },
+    {
+     "backdrop": "with",
+     "n": 1621,
+     "avg_r": 0.35,
+     "win": 0.22,
+     "h1": 0.259,
+     "h2": 0.417
+    }
+   ],
+   "verdict": "PASS (best with vs worst against: gap 0.47R, holds in both halves: True)"
+  },
+  "f_anchor": {
+   "table": [
+    {
+     "f_anchor": "1 touch",
+     "n": 1191,
+     "avg_r": 0.059,
+     "win": 0.181,
+     "h1": 0.022,
+     "h2": 0.094
+    },
+    {
+     "f_anchor": "2+ touches",
+     "n": 2621,
+     "avg_r": 0.027,
+     "win": 0.186,
+     "h1": -0.126,
+     "h2": 0.176
+    },
+    {
+     "f_anchor": "no level",
+     "n": 250,
+     "avg_r": 0.673,
+     "win": 0.252,
+     "h1": 0.507,
+     "h2": 0.791
+    }
+   ],
+   "verdict": "PASS (best no level vs worst 2+ touches: gap 0.65R, holds in both halves: True)"
+  }
+ }
+}

@@ -16,6 +16,16 @@ Not adopted:
 - Entering deeper (a limit further from the open, nearer the stop) did worse everywhere: those fills
   mostly happen on days the trend reverses.
 
+Changes of 11 Nov 2026 (research/PREREG_V2.md, results in research/results/intraday_v2_*.json):
+- BIAS FIX. The bias for a session now comes from the daily score at the last COMPLETED daily bar before the
+  session, as in the test. Before, each 4-hourly run re-read the live score, so a coin that fell during the day
+  could be logged as a bearish breakout after the fact. Entries logged before the fix have no "bias_rule" field.
+- SHADOW RULE v2 (not the displayed rule): the same breakout, but the stop is at least 0.15 daily ATR from the
+  entry. On development data it was the only pre-registered variant to beat the current rule on both daily Sharpe
+  and average R (0.275R vs 0.262R, Sharpe 2.82 vs 1.83); on later data and on 8 other coins it roughly doubled the
+  average (0.146R vs 0.082R; 0.145R vs 0.082R). A cost gate, a strong-bias filter, one-direction-only and a
+  2-coins-a-day cap were all tested and rejected. v2 is logged beside v1 until it has 100 sessions of its own.
+
 Usage: python3 intraday.py --data data.json --out intraday.json [--prev intraday.json]
 """
 from __future__ import annotations
@@ -32,10 +42,16 @@ RULES = {
 # kept for reference/tests only; not adopted (see above)
 INDEX_RULE = {"name": "Open drive", "bias": 40, "kind": "open", "stop_atr": 0.25, "target_r": 2.0}
 US_FUT = {"US500", "NAS100", "US30", "US2000"}
+RULE_VERSION = "intraday-v1"
+SHADOW_VERSION = "intraday-v2-stopfloor"
+SHADOW_FLOOR_ATR = 0.15
+SHADOW_MIN_SESSIONS = 100
 
 
-def intraday_trade(o, h, l, c, bull: bool, kind: str, atr: float, stop_atr, target_r, cost: float, complete: bool) -> dict:
-    """Same fill rules as the test. o/h/l/c: session bars so far. Returns status and prices."""
+def intraday_trade(o, h, l, c, bull: bool, kind: str, atr: float, stop_atr, target_r, cost: float, complete: bool,
+                   stop_floor: float | None = None) -> dict:
+    """Same fill rules as the test. o/h/l/c: session bars so far. Returns status and prices.
+    stop_floor (range breakout only): minimum distance from entry to stop, in price units."""
     n = len(o)
     out = {"status": "waiting", "entry": None, "stop": None, "target": None, "r": None}
     if kind == "open":
@@ -46,6 +62,8 @@ def intraday_trade(o, h, l, c, bull: bool, kind: str, atr: float, stop_atr, targ
         if n == 0:
             out["status"] = "range forming"; return out
         E = h[0] if bull else l[0]; S = l[0] if bull else h[0]; start = 1
+        if stop_floor is not None and stop_floor > abs(E - S):
+            S = E - stop_floor if bull else E + stop_floor
         out.update(entry=float(E), stop=float(S))
         if n == 1:
             out["status"] = "range forming" if not complete else "no fill"; return out
@@ -121,18 +139,29 @@ def fetch_hourly(ysym: str) -> pd.DataFrame:
     raise RuntimeError(f"{ysym}: {last}")
 
 
+def bias_score(row: dict, day) -> tuple[float, str | None]:
+    """Score at the last completed daily bar before `day` (a date). Falls back to the live score."""
+    best = None
+    for h in row.get("history", []):
+        if h.get("score") is not None and h["date"] < str(day):
+            best = h
+    return (float(best["score"]), best["date"]) if best else (float(row["score"]), None)
+
+
 def plan_for(row: dict, hdf: pd.DataFrame, now: pd.Timestamp) -> dict:
     cls, sym = row["asset_class"], row["symbol"]
-    rule = RULES[cls]; score = row["score"]; price = row["price"]
+    rule = RULES[cls]; price = row["price"]
     atr = (row.get("atr14_pct") or 0) / 100 * price
     tz = NY if (cls == "index" and sym in US_FUT) else UK
     day = now.tz_convert(tz).date()
+    score, bias_date = bias_score(row, day)
     s, e = session_window(sym, cls, day)
     if now >= e:   # today's session is over: show the next one, keep today's result
         done_bars, _, _ = session_bars(hdf, sym, cls, day)
     else:
         done_bars = None
-    out = {"symbol": sym, "asset_class": cls, "rule": rule["name"], "score": score, "atr": round(atr, 6),
+    out = {"symbol": sym, "asset_class": cls, "rule": rule["name"], "version": RULE_VERSION, "score": score, "score_now": row["score"],
+           "bias_date": bias_date, "bias_rule": "prev_close" if bias_date else "live_score", "atr": round(atr, 6),
            "session_date": str(day), "session_start_utc": s.isoformat(), "session_end_utc": e.isoformat(),
            "bias": "bullish" if score >= rule["bias"] else "bearish" if score <= -rule["bias"] else None}
     if out["bias"] is None:
@@ -146,6 +175,12 @@ def plan_for(row: dict, hdf: pd.DataFrame, now: pd.Timestamp) -> dict:
     if now < s:
         t["status"] = "waiting for session open"
     out.update(t)
+    if rule["kind"] == "orb":
+        sh = intraday_trade(bars["open"].values, bars["high"].values, bars["low"].values, bars["close"].values,
+                            bull, "orb", atr, None, None, COST[cls], complete, stop_floor=SHADOW_FLOOR_ATR * atr)
+        if now < s:
+            sh["status"] = "waiting for session open"
+        out["shadow"] = {"version": SHADOW_VERSION, **{k: sh.get(k) for k in ("status", "entry", "stop", "r")}}
     if rule["kind"] == "open":
         out["plan"] = {"stop_points": round(rule["stop_atr"] * atr, 6), "target_points": round(rule["stop_atr"] * atr * rule["target_r"], 6),
                        "example_entry": price, "example_stop": round(price - rule["stop_atr"] * atr if bull else price + rule["stop_atr"] * atr, 6),
@@ -174,21 +209,42 @@ def main() -> int:
         except Exception as ex:
             errors.append(f"{row['symbol']}: {ex}")
         time.sleep(0.3)
+    DONE = ("stopped", "target hit", "closed at session end")
     hist = {(h["symbol"], h["session_date"]): h for h in prev.get("history", [])}
+    pshadow = prev.get("shadow") or {}
+    shist = {(h["symbol"], h["session_date"]): h for h in pshadow.get("history", [])}
     for p in plans:
         if not prev:     # first run: start the live log from the next session, not one already under way
             break
-        if p.get("r") is not None and p.get("status") in ("stopped", "target hit", "closed at session end"):
-            hist[(p["symbol"], p["session_date"])] = {k: p.get(k) for k in ("symbol", "asset_class", "session_date", "bias", "entry", "stop", "target", "status", "r")}
-    history = sorted(hist.values(), key=lambda h: (h["session_date"], h["symbol"]))[-300:]
-    rs = [h["r"] for h in history]
+        key = (p["symbol"], p["session_date"])
+        old = hist.get(key)
+        if old is not None and old.get("bias_rule") != "prev_close" and old.get("bias") != p.get("bias"):
+            continue     # a session already logged under the old (live-score) bias keeps its record
+        if p.get("r") is not None and p.get("status") in DONE:
+            hist[key] = {**{k: p.get(k) for k in ("symbol", "asset_class", "session_date", "bias", "entry", "stop", "target", "status", "r", "bias_rule", "version")},
+                         "score": p.get("score")}
+        sh = p.get("shadow") or {}
+        if sh.get("r") is not None and sh.get("status") in DONE and p.get("bias_rule") == "prev_close":
+            shist[key] = {"symbol": p["symbol"], "asset_class": p["asset_class"], "session_date": p["session_date"], "bias": p.get("bias"),
+                          "entry": sh.get("entry"), "stop": sh.get("stop"), "status": sh.get("status"), "r": sh.get("r"),
+                          "version": SHADOW_VERSION, "score": p.get("score")}
+    history = sorted(hist.values(), key=lambda h: (h["session_date"], h["symbol"]))[-400:]
+    shadow_history = sorted(shist.values(), key=lambda h: (h["session_date"], h["symbol"]))[-400:]
+
+    def summ(hs):
+        rs = [h["r"] for h in hs]
+        return {"closed": len(rs), "avg_r": round(sum(rs) / len(rs), 3) if rs else None,
+                "win_rate": round(sum(r > 0 for r in rs) / len(rs), 3) if rs else None,
+                "total_r": round(sum(rs), 2) if rs else None}
+
     out = {"generated_at": now.strftime("%Y-%m-%dT%H:%M:%SZ"), "started": prev.get("started") or now.strftime("%Y-%m-%d"),
-           "plans": plans, "history": history,
-           "summary": {"closed": len(rs), "avg_r": round(sum(rs) / len(rs), 3) if rs else None,
-                       "win_rate": round(sum(r > 0 for r in rs) / len(rs), 3) if rs else None},
+           "version": RULE_VERSION, "plans": plans, "history": history, "summary": summ(history),
+           "shadow": {"version": SHADOW_VERSION, "rule": f"Same breakout; stop at least {SHADOW_FLOOR_ATR} daily ATR from entry",
+                      "started": pshadow.get("started") or now.strftime("%Y-%m-%d"), "min_sessions": SHADOW_MIN_SESSIONS,
+                      "history": shadow_history, "summary": summ(shadow_history)},
            "errors": errors}
     json.dump(out, open(a.out, "w"), separators=(",", ":"))
-    print(f"intraday: plans {len(plans)}  live sessions logged {len(rs)}  errors {len(errors)}")
+    print(f"intraday: plans {len(plans)}  live sessions logged {len(history)}  shadow sessions logged {len(shadow_history)}  errors {len(errors)}")
     return 0
 
 

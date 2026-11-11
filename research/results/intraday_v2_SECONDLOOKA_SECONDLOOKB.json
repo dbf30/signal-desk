@@ -1,0 +1,226 @@
+{
+ "SECOND LOOK A": {
+  "S0 current": {
+   "n": 1157,
+   "win": 0.258,
+   "avg_r": 0.082,
+   "pf": 1.1,
+   "total_r": 95.0,
+   "day_sharpe": 0.58,
+   "max_dd_r": -55.9,
+   "worst_day_r": -5.6
+  },
+  "S1 cost<= 10%": {
+   "n": 273,
+   "win": 0.341,
+   "avg_r": 0.056,
+   "pf": 1.09,
+   "total_r": 15.2,
+   "day_sharpe": 0.35,
+   "max_dd_r": -44.4,
+   "worst_day_r": -4.4
+  },
+  "S1 cost<= 20%": {
+   "n": 784,
+   "win": 0.288,
+   "avg_r": 0.071,
+   "pf": 1.09,
+   "total_r": 55.4,
+   "day_sharpe": 0.54,
+   "max_dd_r": -64.0,
+   "worst_day_r": -4.7
+  },
+  "S1 cost<= 30%": {
+   "n": 1005,
+   "win": 0.27,
+   "avg_r": 0.092,
+   "pf": 1.11,
+   "total_r": 92.3,
+   "day_sharpe": 0.63,
+   "max_dd_r": -68.7,
+   "worst_day_r": -5.0
+  },
+  "S2 floor 0.1 ATR": {
+   "n": 1157,
+   "win": 0.289,
+   "avg_r": 0.104,
+   "pf": 1.13,
+   "total_r": 120.6,
+   "day_sharpe": 0.85,
+   "max_dd_r": -54.4,
+   "worst_day_r": -5.0
+  },
+  "S2 floor 0.15 ATR": {
+   "n": 1157,
+   "win": 0.337,
+   "avg_r": 0.146,
+   "pf": 1.21,
+   "total_r": 168.4,
+   "day_sharpe": 1.3,
+   "max_dd_r": -54.8,
+   "worst_day_r": -4.7
+  },
+  "S2 floor 0.25 ATR": {
+   "n": 1157,
+   "win": 0.429,
+   "avg_r": 0.163,
+   "pf": 1.31,
+   "total_r": 189.0,
+   "day_sharpe": 1.88,
+   "max_dd_r": -29.6,
+   "worst_day_r": -4.5
+  },
+  "S3 |score|>=40": {
+   "n": 514,
+   "win": 0.27,
+   "avg_r": 0.189,
+   "pf": 1.23,
+   "total_r": 97.4,
+   "day_sharpe": 0.86,
+   "max_dd_r": -57.0,
+   "worst_day_r": -5.6
+  },
+  "S4 longs only": {
+   "n": 615,
+   "win": 0.26,
+   "avg_r": 0.007,
+   "pf": 1.01,
+   "total_r": 4.1,
+   "day_sharpe": 0.04,
+   "max_dd_r": -47.1,
+   "worst_day_r": -5.6
+  },
+  "S4 shorts only": {
+   "n": 542,
+   "win": 0.256,
+   "avg_r": 0.168,
+   "pf": 1.2,
+   "total_r": 90.8,
+   "day_sharpe": 0.75,
+   "max_dd_r": -64.2,
+   "worst_day_r": -5.1
+  },
+  "S5 cap 2/day": {
+   "n": 748,
+   "win": 0.239,
+   "avg_r": -0.025,
+   "pf": 0.97,
+   "total_r": -18.5,
+   "day_sharpe": -0.18,
+   "max_dd_r": -71.4,
+   "worst_day_r": -5.1
+  }
+ },
+ "SECOND LOOK B": {
+  "S0 current": {
+   "n": 3454,
+   "win": 0.261,
+   "avg_r": 0.082,
+   "pf": 1.1,
+   "total_r": 284.5,
+   "day_sharpe": 0.73,
+   "max_dd_r": -178.1,
+   "worst_day_r": -9.8
+  },
+  "S1 cost<= 10%": {
+   "n": 1210,
+   "win": 0.317,
+   "avg_r": 0.01,
+   "pf": 1.01,
+   "total_r": 11.8,
+   "day_sharpe": 0.08,
+   "max_dd_r": -101.4,
+   "worst_day_r": -7.6
+  },
+  "S1 cost<= 20%": {
+   "n": 2515,
+   "win": 0.277,
+   "avg_r": 0.037,
+   "pf": 1.05,
+   "total_r": 93.3,
+   "day_sharpe": 0.35,
+   "max_dd_r": -115.1,
+   "worst_day_r": -8.6
+  },
+  "S1 cost<= 30%": {
+   "n": 2991,
+   "win": 0.268,
+   "avg_r": 0.072,
+   "pf": 1.09,
+   "total_r": 215.2,
+   "day_sharpe": 0.64,
+   "max_dd_r": -142.5,
+   "worst_day_r": -9.2
+  },
+  "S2 floor 0.1 ATR": {
+   "n": 3454,
+   "win": 0.299,
+   "avg_r": 0.142,
+   "pf": 1.19,
+   "total_r": 489.8,
+   "day_sharpe": 1.38,
+   "max_dd_r": -93.2,
+   "worst_day_r": -9.4
+  },
+  "S2 floor 0.15 ATR": {
+   "n": 3454,
+   "win": 0.347,
+   "avg_r": 0.145,
+   "pf": 1.22,
+   "total_r": 502.3,
+   "day_sharpe": 1.63,
+   "max_dd_r": -83.8,
+   "worst_day_r": -9.1
+  },
+  "S2 floor 0.25 ATR": {
+   "n": 3454,
+   "win": 0.423,
+   "avg_r": 0.142,
+   "pf": 1.28,
+   "total_r": 488.9,
+   "day_sharpe": 2.02,
+   "max_dd_r": -55.4,
+   "worst_day_r": -8.7
+  },
+  "S3 |score|>=40": {
+   "n": 1634,
+   "win": 0.25,
+   "avg_r": 0.041,
+   "pf": 1.05,
+   "total_r": 67.6,
+   "day_sharpe": 0.28,
+   "max_dd_r": -108.0,
+   "worst_day_r": -9.7
+  },
+  "S4 longs only": {
+   "n": 1999,
+   "win": 0.266,
+   "avg_r": 0.079,
+   "pf": 1.09,
+   "total_r": 158.1,
+   "day_sharpe": 0.55,
+   "max_dd_r": -124.0,
+   "worst_day_r": -9.7
+  },
+  "S4 shorts only": {
+   "n": 1455,
+   "win": 0.254,
+   "avg_r": 0.087,
+   "pf": 1.1,
+   "total_r": 126.3,
+   "day_sharpe": 0.49,
+   "max_dd_r": -185.3,
+   "worst_day_r": -9.8
+  },
+  "S5 cap 2/day": {
+   "n": 1337,
+   "win": 0.234,
+   "avg_r": -0.08,
+   "pf": 0.91,
+   "total_r": -106.7,
+   "day_sharpe": -0.73,
+   "max_dd_r": -145.0,
+   "worst_day_r": -4.1
+  }
+ }
+}
