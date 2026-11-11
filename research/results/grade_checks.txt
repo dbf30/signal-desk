@@ -1,0 +1,24 @@
+second-look sets, by group: n, avg R, and avg R for above/below the group's median prediction
+                group     n    avg  hi_half  lo_half                                                grades
+0        bond:bearish   338 -0.307   -0.396   -0.226                      {'C': 161, 'Avoid': 94, 'B': 83}
+1        bond:bullish   504  0.198   -0.023    0.344             {'C': 296, 'B': 123, 'Avoid': 82, 'A': 3}
+2   commodity:bearish  1069 -0.443   -0.374   -0.498                                       {'Avoid': 1069}
+3   commodity:bullish  1318 -0.214   -0.229   -0.202                     {'Avoid': 953, 'C': 351, 'B': 14}
+4      crypto:bearish   586 -0.154   -0.150   -0.157                     {'Avoid': 289, 'C': 272, 'B': 25}
+5      crypto:bullish   861  1.326    2.316    0.521                                   {'A+': 857, 'A': 4}
+6          fx:bearish   375 -0.300   -0.296   -0.304                      {'Avoid': 196, 'C': 178, 'B': 1}
+7          fx:bullish   529 -0.315   -0.243   -0.373                      {'Avoid': 407, 'C': 120, 'B': 2}
+8       index:bearish   212 -0.486   -0.706   -0.266                                        {'Avoid': 212}
+9       index:bullish   742 -0.028    0.155   -0.209                    {'Avoid': 327, 'C': 271, 'B': 144}
+10      stock:bearish   490 -0.664   -0.613   -0.708                                        {'Avoid': 490}
+11      stock:bullish  1646  0.039    0.240   -0.136  {'A': 973, 'B': 370, 'A+': 266, 'C': 36, 'Avoid': 1}
+backdrop_f {'against': (969, np.float64(-0.153)), 'n/a': (4133, np.float64(0.0)), 'with': (3568, np.float64(0.042))}
+location {'beyond 2 ATR': (123, np.float64(-0.092)), 'in zone': (3219, np.float64(0.2)), 'within 2 ATR': (5328, np.float64(-0.119))}
+freshness {'score 40-55': (4389, np.float64(0.052)), 'score 55+': (4281, np.float64(-0.053))}
+overhead {'close': (5564, np.float64(0.096)), 'far': (2901, np.float64(-0.19)), 'none ahead': (205, np.float64(0.094))}
+anchor {'level': (8191, np.float64(-0.009)), 'no level': (479, np.float64(0.145))}
+A+ by class: {'crypto': {'size': 857, 'mean': 1.331}, 'stock': {'size': 266, 'mean': 0.372}}
+longs all: 0.149 5600  shorts all: -0.393 3070
+fill_date  2010   2011   2012   2013   2014   2015   2016   2017   2018   2019   2020    2021   2022    2023    2024    2025   2026
+size       17.0  15.00  19.00  15.00  25.00  12.00  31.00  19.00  36.00  82.00  97.00  107.00  24.00  187.00  171.00  160.00  106.0
+mean       -0.7  -0.59   0.26   0.27   0.56   1.94   0.75  10.14  -0.11   0.95   5.09    0.62  -0.82    0.66    1.78   -0.21   -0.1

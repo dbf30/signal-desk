@@ -1,0 +1,219 @@
+{
+ "LIVE WINDOW": {
+  "S0 current": {
+   "n": 15,
+   "win": 0.533,
+   "avg_r": 1.083,
+   "pf": 2.99,
+   "total_r": 16.2,
+   "day_sharpe": 7.43,
+   "max_dd_r": -3.6,
+   "worst_day_r": -2.6
+  },
+  "S1 cost<= 10%": {
+   "n": 6,
+   "win": 0.667,
+   "avg_r": 1.369,
+   "pf": 4.82,
+   "total_r": 8.2,
+   "day_sharpe": 8.16,
+   "max_dd_r": -2.2,
+   "worst_day_r": -1.1
+  },
+  "S1 cost<= 20%": {
+   "n": 12,
+   "win": 0.583,
+   "avg_r": 1.423,
+   "pf": 4.05,
+   "total_r": 17.1,
+   "day_sharpe": 8.28,
+   "max_dd_r": -2.3,
+   "worst_day_r": -2.3
+  },
+  "S1 cost<= 30%": {
+   "n": 15,
+   "win": 0.533,
+   "avg_r": 1.083,
+   "pf": 2.99,
+   "total_r": 16.2,
+   "day_sharpe": 7.43,
+   "max_dd_r": -3.6,
+   "worst_day_r": -2.6
+  },
+  "S2 floor 0.1 ATR": {
+   "n": 15,
+   "win": 0.533,
+   "avg_r": 1.043,
+   "pf": 2.97,
+   "total_r": 15.6,
+   "day_sharpe": 7.28,
+   "max_dd_r": -3.4,
+   "worst_day_r": -2.3
+  },
+  "S2 floor 0.15 ATR": {
+   "n": 15,
+   "win": 0.533,
+   "avg_r": 0.862,
+   "pf": 2.65,
+   "total_r": 12.9,
+   "day_sharpe": 6.99,
+   "max_dd_r": -3.3,
+   "worst_day_r": -2.3
+  },
+  "S2 floor 0.25 ATR": {
+   "n": 15,
+   "win": 0.6,
+   "avg_r": 0.708,
+   "pf": 2.77,
+   "total_r": 10.6,
+   "day_sharpe": 7.91,
+   "max_dd_r": -2.2,
+   "worst_day_r": -2.2
+  },
+  "S3 |score|>=40": {
+   "n": 2,
+   "win": 0.5,
+   "avg_r": 0.214,
+   "pf": 1.4,
+   "total_r": 0.4,
+   "day_sharpe": 2.27,
+   "max_dd_r": 0.0,
+   "worst_day_r": -1.1
+  },
+  "S4 longs only": {
+   "n": 0
+  },
+  "S4 shorts only": {
+   "n": 15,
+   "win": 0.533,
+   "avg_r": 1.083,
+   "pf": 2.99,
+   "total_r": 16.2,
+   "day_sharpe": 7.43,
+   "max_dd_r": -3.6,
+   "worst_day_r": -2.6
+  },
+  "S5 cap 2/day": {
+   "n": 13,
+   "win": 0.462,
+   "avg_r": 0.611,
+   "pf": 1.97,
+   "total_r": 7.9,
+   "day_sharpe": 5.75,
+   "max_dd_r": -3.6,
+   "worst_day_r": -2.6
+  }
+ },
+ "DEV": {
+  "S0 current": {
+   "n": 614,
+   "win": 0.29,
+   "avg_r": 0.262,
+   "pf": 1.33,
+   "total_r": 161.1,
+   "day_sharpe": 1.83,
+   "max_dd_r": -43.2,
+   "worst_day_r": -5.3
+  },
+  "S1 cost<= 10%": {
+   "n": 229,
+   "win": 0.376,
+   "avg_r": 0.229,
+   "pf": 1.36,
+   "total_r": 52.3,
+   "day_sharpe": 1.93,
+   "max_dd_r": -10.5,
+   "worst_day_r": -4.3
+  },
+  "S1 cost<= 20%": {
+   "n": 473,
+   "win": 0.302,
+   "avg_r": 0.176,
+   "pf": 1.24,
+   "total_r": 83.4,
+   "day_sharpe": 1.52,
+   "max_dd_r": -40.7,
+   "worst_day_r": -4.6
+  },
+  "S1 cost<= 30%": {
+   "n": 559,
+   "win": 0.302,
+   "avg_r": 0.222,
+   "pf": 1.29,
+   "total_r": 123.9,
+   "day_sharpe": 1.99,
+   "max_dd_r": -34.9,
+   "worst_day_r": -4.8
+  },
+  "S2 floor 0.1 ATR": {
+   "n": 614,
+   "win": 0.327,
+   "avg_r": 0.239,
+   "pf": 1.33,
+   "total_r": 146.8,
+   "day_sharpe": 2.23,
+   "max_dd_r": -35.5,
+   "worst_day_r": -4.9
+  },
+  "S2 floor 0.15 ATR": {
+   "n": 614,
+   "win": 0.386,
+   "avg_r": 0.275,
+   "pf": 1.45,
+   "total_r": 168.9,
+   "day_sharpe": 2.82,
+   "max_dd_r": -32.3,
+   "worst_day_r": -4.5
+  },
+  "S2 floor 0.25 ATR": {
+   "n": 614,
+   "win": 0.456,
+   "avg_r": 0.218,
+   "pf": 1.46,
+   "total_r": 134.1,
+   "day_sharpe": 3.05,
+   "max_dd_r": -25.1,
+   "worst_day_r": -4.3
+  },
+  "S3 |score|>=40": {
+   "n": 358,
+   "win": 0.265,
+   "avg_r": 0.067,
+   "pf": 1.08,
+   "total_r": 24.0,
+   "day_sharpe": 0.44,
+   "max_dd_r": -43.8,
+   "worst_day_r": -5.3
+  },
+  "S4 longs only": {
+   "n": 427,
+   "win": 0.288,
+   "avg_r": 0.131,
+   "pf": 1.16,
+   "total_r": 55.8,
+   "day_sharpe": 1.0,
+   "max_dd_r": -48.9,
+   "worst_day_r": -5.3
+  },
+  "S4 shorts only": {
+   "n": 187,
+   "win": 0.294,
+   "avg_r": 0.563,
+   "pf": 1.71,
+   "total_r": 105.3,
+   "day_sharpe": 1.77,
+   "max_dd_r": -23.9,
+   "worst_day_r": -4.7
+  },
+  "S5 cap 2/day": {
+   "n": 407,
+   "win": 0.278,
+   "avg_r": 0.239,
+   "pf": 1.29,
+   "total_r": 97.1,
+   "day_sharpe": 1.56,
+   "max_dd_r": -43.3,
+   "worst_day_r": -3.5
+  }
+ }
+}

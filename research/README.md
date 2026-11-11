@@ -23,6 +23,19 @@ All outputs are written next to the scripts. The intermediate `.pkl` files are l
 | 7 | `tf_hold.py` | Study 2: the selected version, once, on the holdout + benchmarks | `tf_holdout.json` |
 | 8 | `tf_checks.py` | Always-long comparison, S&P 500 beta, one-week delay test, random-signal placebo | printed |
 
+### v2 study (11 Nov 2026, `PREREG_V2.md`)
+
+| Step | Script | What it does | Output |
+| --- | --- | --- | --- |
+| 9 | `features.py` | Adds setup features (distance to zone, room to next level, anchor touches, stretch, volatility ratio, backdrop) | `features.pkl` |
+| 10 | `swing_v2.py dev` | Q1: closed-only bias replay, marked R by horizon, cost drag. Q2: factor tables on development data | `results/swing_v2_dev.json` |
+| 11 | `grade_model.py fit` then `second` | Fits the grade model on 2010–2022 watchlist trades, then checks grades once on later and unseen data | `results/grade_model.json` |
+| 12 | `grade_checks.py`, `grade_residuals.py` | Within-group checks, A+ by asset class and by year | `results/grade_checks.txt` |
+| 13 | `fetch_hourly.py` | Two years of hourly bars for 12 coins | `hourly.pkl` |
+| 14 | `intraday_v2.py DEV` etc. | Q3: the live intraday rule and five pre-listed variants | `results/intraday_v2_*.json` |
+
+Read the audit note at the end of `PREREG_V2.md` before relying on the "second look" figures.
+
 `sim.py` (trade simulator) and `portfolio.py` (selection, mark-to-market, metrics) are modules used by the steps above.
 
 `backtest_3y.py` and `backtest_3y_stats.py` are the first quick three-year backtest of the current rules. It predates the data cleaning and the planned-risk fix, and is superseded by the scripts above.
